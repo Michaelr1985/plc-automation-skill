@@ -1,0 +1,46 @@
+Name,Type,Scope,Description
+CP01,UDT_Cascade,Program P_VSD_Cascade,5 VSD cascade group control
+CP01_VSD,UDT_VSD[5],Program P_VSD_Cascade,VSD array index 0 to 4
+CP01_tStageOn,TIMER,Program P_VSD_Cascade,Stage-up delay timer
+CP01_tStageOff,TIMER,Program P_VSD_Cascade,Stage-down delay timer
+CP01_tStartFail,TIMER[5],Program P_VSD_Cascade,Start feedback timeout per VSD
+CP01_tMinRun,TIMER[5],Program P_VSD_Cascade,Minimum run timer per VSD
+CP01_tMinStop,TIMER[5],Program P_VSD_Cascade,Minimum stop timer per VSD
+CP01_i,DINT,Program P_VSD_Cascade,Structured Text loop index
+CP01_scanIndex,DINT,Program P_VSD_Cascade,Structured Text array scan index
+CP01_NextLeadIndex,DINT,Program P_VSD_Cascade,Preferred lead index for next start 0 to 4
+CP01_RotateLeadPrev,BOOL,Program P_VSD_Cascade,Previous scan rotate command storage
+CP01_EStopOK,BOOL,Program P_VSD_Cascade,Hardwired safety chain healthy indication
+CP01_ProcessPermissiveOK,BOOL,Program P_VSD_Cascade,Process permissive summary
+CP01_StartONS,BOOL,Program P_VSD_Cascade,One-shot storage for start command if using LD wrapper
+CP01_ResetONS,BOOL,Program P_VSD_Cascade,One-shot storage for reset command if using LD wrapper
+I_VSD01_Ready,BOOL,Controller,VSD01 ready input or mapped comms bit
+I_VSD01_Running,BOOL,Controller,VSD01 running input or mapped comms bit
+I_VSD01_Faulted,BOOL,Controller,VSD01 fault input or mapped comms bit
+I_VSD01_Local,BOOL,Controller,VSD01 local/keypad input or mapped comms bit
+O_VSD01_RunCmd,BOOL,Controller,VSD01 run command output or mapped comms bit
+O_VSD01_SpeedRefPct,REAL,Controller,VSD01 speed reference percent
+I_VSD02_Ready,BOOL,Controller,VSD02 ready input or mapped comms bit
+I_VSD02_Running,BOOL,Controller,VSD02 running input or mapped comms bit
+I_VSD02_Faulted,BOOL,Controller,VSD02 fault input or mapped comms bit
+I_VSD02_Local,BOOL,Controller,VSD02 local/keypad input or mapped comms bit
+O_VSD02_RunCmd,BOOL,Controller,VSD02 run command output or mapped comms bit
+O_VSD02_SpeedRefPct,REAL,Controller,VSD02 speed reference percent
+I_VSD03_Ready,BOOL,Controller,VSD03 ready input or mapped comms bit
+I_VSD03_Running,BOOL,Controller,VSD03 running input or mapped comms bit
+I_VSD03_Faulted,BOOL,Controller,VSD03 fault input or mapped comms bit
+I_VSD03_Local,BOOL,Controller,VSD03 local/keypad input or mapped comms bit
+O_VSD03_RunCmd,BOOL,Controller,VSD03 run command output or mapped comms bit
+O_VSD03_SpeedRefPct,REAL,Controller,VSD03 speed reference percent
+I_VSD04_Ready,BOOL,Controller,VSD04 ready input or mapped comms bit
+I_VSD04_Running,BOOL,Controller,VSD04 running input or mapped comms bit
+I_VSD04_Faulted,BOOL,Controller,VSD04 fault input or mapped comms bit
+I_VSD04_Local,BOOL,Controller,VSD04 local/keypad input or mapped comms bit
+O_VSD04_RunCmd,BOOL,Controller,VSD04 run command output or mapped comms bit
+O_VSD04_SpeedRefPct,REAL,Controller,VSD04 speed reference percent
+I_VSD05_Ready,BOOL,Controller,VSD05 ready input or mapped comms bit
+I_VSD05_Running,BOOL,Controller,VSD05 running input or mapped comms bit
+I_VSD05_Faulted,BOOL,Controller,VSD05 fault input or mapped comms bit
+I_VSD05_Local,BOOL,Controller,VSD05 local/keypad input or mapped comms bit
+O_VSD05_RunCmd,BOOL,Controller,VSD05 run command output or mapped comms bit
+O_VSD05_SpeedRefPct,REAL,Controller,VSD05 speed reference percent
