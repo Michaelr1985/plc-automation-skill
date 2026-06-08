@@ -22,6 +22,7 @@ Reset clears latched faults only after the unsafe/fault condition is gone. Reset
 - `controller-tags.csv`: suggested controller/program tag list.
 - `VSD_Cascade_Main.ST`: Logix-style Structured Text cascade routine.
 - `commissioning-checklist.md`: commissioning and safety validation checklist.
+- `Allen-Bradley-5-VSD-Cascade-Commissioning-Checklist.xlsx`: Excel commissioning checklist with status tracking and signoff fields.
 
 ## Recommended Logix Organization
 
