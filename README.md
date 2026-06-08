@@ -1,0 +1,33 @@
+# PLC Automation Codex Skill
+
+A custom Codex skill for PLC automation engineering work across IEC 61131-3 languages and common industrial automation platforms.
+
+## What It Covers
+
+- IEC 61131-3 programming posture and review guidance
+- Ladder Diagram (LD), Structured Text (ST), and Function Block Diagram (FBD) patterns
+- Siemens TIA Portal / STEP 7 conventions
+- Rockwell Studio 5000 Logix Designer conventions
+- Schneider EcoStruxure Machine Expert conventions
+- CODESYS programming standards
+- Mine automation safety and sequencing guidance
+- Safety interlock review principles
+- Motor starter and conveyor control templates
+
+## Skill Name
+
+Invoke the skill in Codex as:
+
+```text
+$plc-automation
+```
+
+## Install Location
+
+Copy the `plc-automation` folder into your Codex skills directory:
+
+```text
+~/.codex/skills/plc-automation
+```
+
+The skill has already been installed locally on this machine.

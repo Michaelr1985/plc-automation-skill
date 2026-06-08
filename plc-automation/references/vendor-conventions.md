@@ -1,0 +1,84 @@
+# Vendor Conventions
+
+## Siemens TIA Portal / STEP 7
+
+Use for SIMATIC S7-1200, S7-1500, TIA Portal, STEP 7, LAD/FBD/SCL, DBs, FBs, FCs, OBs, UDTs, ProDiag, and SIMATIC Safety discussions.
+
+Conventions:
+
+- Prefer symbolic tags over absolute addresses in application logic.
+- Use FBs with instance DBs for reusable equipment modules.
+- Use FCs for stateless calculations or checks.
+- Keep OB1 orchestration thin; call area/equipment FBs from organized networks.
+- Use UDTs for equipment interfaces, parameters, alarms, and HMI structures.
+- Use optimized blocks unless integration requirements demand non-optimized access.
+- Use SCL for state machines and calculations; LAD/FBD for field-maintainable discrete interlocks.
+- Use network titles/comments to make online diagnosis readable.
+- Separate safety program logic from standard control logic. Do not simulate certified safety behavior with standard code.
+
+Naming examples:
+
+- `MTR_CV101` for a conveyor motor FB instance.
+- `CV101_CmdStart`, `CV101_RunFb`, `CV101_TripPullwire`.
+- `udtMotorCmd`, `udtMotorSts`, `fbMotorStarter`.
+
+## Rockwell Studio 5000 Logix Designer
+
+Use for ControlLogix, CompactLogix, GuardLogix, Studio 5000, Logix Designer, Ladder, FBD, ST, AOIs, UDTs, tasks, programs, routines, and PlantPAx-style patterns.
+
+Conventions:
+
+- Use UDTs for equipment command/status/config structures.
+- Use AOIs for reusable validated equipment behavior when the site permits AOI lifecycle controls.
+- Separate periodic/continuous/event tasks deliberately. Document task period assumptions.
+- Use program-scoped tags for local internals and controller-scoped tags for shared I/O/HMI interfaces.
+- Use aliases or mapped I/O tags to avoid raw module references throughout process logic.
+- Use `ONS`/edge logic for commands that must not retrigger each scan.
+- Watch retentive behavior of tags, timers, and latches across downloads/power cycles.
+- For GuardLogix, keep safety task and safety tags under safety lifecycle controls.
+
+Naming examples:
+
+- `CV101.Cmd.Start`, `CV101.Sts.Running`, `CV101.Trip.Pullwire`.
+- `Mtr_CV101`, `AOI_MotorStarter`, `UDT_Motor`.
+- `I_CV101_RunFb`, `O_CV101_RunCmd` when flat tag styles are required.
+
+## Schneider EcoStruxure Machine Expert
+
+Use for Modicon machine controllers, EcoStruxure Machine Expert, Machine Expert - Safety, GVLs, POUs, libraries, and CODESYS-derived project structure.
+
+Conventions:
+
+- Confirm product line first: Machine Expert, Machine Expert - Basic, Machine Expert - Safety, or Control Expert differ.
+- Use POUs and DUTs/structures for reusable equipment modules.
+- Use GVLs sparingly for shared I/O and system-wide constants.
+- Prefer local variables inside FBs and explicit interfaces between POUs.
+- Confirm which IEC languages and safety subsets are available in the selected product/version.
+- Keep safety logic in the safety environment and standard control in the standard controller environment.
+
+Naming examples:
+
+- `FB_MotorStarter`, `ST_MotorCmd`, `ST_MotorSts`.
+- `gvlIO.xCV101RunFb`, `fbCV101`, `xPermissiveOK`.
+
+## CODESYS
+
+Use for CODESYS V3 applications, IEC POUs, libraries, devices, tasks, visualizations, and fieldbus mappings.
+
+Conventions:
+
+- Use `FB_`, `FC_`, `PRG_`, `GVL_`, `DUT_` prefixes if the project already follows that style.
+- Use methods/properties/interfaces only when the maintenance team and target runtime support them comfortably.
+- Prefer library-qualified names when ambiguity is possible.
+- Keep device I/O mapping separate from application logic.
+- Document task cycle time and watchdog assumptions.
+- Treat online changes, retained variables, and persistent variables as commissioning risks requiring checks.
+
+## Vendor-Neutral Migration Watchpoints
+
+- Boolean polarity and normally-open/normally-closed symbol meaning.
+- Timer/counter reset and retentive behavior.
+- First-scan bits and power-up initialization.
+- Array lower bounds and string handling.
+- UDT/structure packing and HMI tag paths.
+- Safety signatures, passwords, locked blocks, source protection, and online edit limitations.
