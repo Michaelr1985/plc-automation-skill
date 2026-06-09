@@ -35,3 +35,4 @@ The skill has already been installed locally on this machine.
 ## Included Control Packages
 
 - `rockwell-studio5000/`: Allen-Bradley / Rockwell Studio 5000 package for a 5 VSD cascade control panel.
+- `codesys-st/`: CODESYS Structured Text package for the same 5 VSD cascade control panel.
