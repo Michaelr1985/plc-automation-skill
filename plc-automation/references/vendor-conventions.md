@@ -8,6 +8,11 @@ Conventions:
 
 - Prefer symbolic tags over absolute addresses in application logic.
 - Use FBs with instance DBs for reusable equipment modules.
+- Always create and document the relevant DBs in the software design, not only the logic blocks.
+- For each reusable FB, include its instance DB or multi-instance plan.
+- Create global DBs where needed for HMI command/status, configuration parameters, diagnostics, alarms/events, recipes, retained values, and external interfaces.
+- Separate DBs by purpose when it improves commissioning and maintenance: for example `DB_HMI`, `DB_Config`, `DB_Diagnostics`, `DB_Alarms`, `DB_ProcessData`, and equipment instance DBs.
+- Mark which DB members are retentive, HMI-writable, read-only status, engineering constants, or commissioning-only.
 - Use FCs for stateless calculations or checks.
 - Keep OB1 orchestration thin; call area/equipment FBs from organized networks.
 - Use UDTs for equipment interfaces, parameters, alarms, and HMI structures.
@@ -19,6 +24,8 @@ Conventions:
 Naming examples:
 
 - `MTR_CV101` for a conveyor motor FB instance.
+- `DB_MTR_CV101` or the local standard name for the motor FB instance DB.
+- `DB_HMI_CV101`, `DB_CFG_CV101`, `DB_DIAG_CV101` for HMI/config/diagnostic global DBs when separate DBs are useful.
 - `CV101_CmdStart`, `CV101_RunFb`, `CV101_TripPullwire`.
 - `udtMotorCmd`, `udtMotorSts`, `fbMotorStarter`.
 
