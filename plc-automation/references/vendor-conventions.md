@@ -81,6 +81,30 @@ Conventions:
 - Document task cycle time and watchdog assumptions.
 - Treat online changes, retained variables, and persistent variables as commissioning risks requiring checks.
 
+## Delta ISPSoft / WPLSoft
+
+Use for Delta PLC work only after confirming exact CPU and programming software.
+
+Conventions:
+
+- Confirm supported IEC languages and instruction set before writing syntax.
+- Document retentive memory ranges/registers explicitly.
+- Keep step words in documented retentive memory.
+- Use vendor-neutral pseudocode if software/CPU details are missing.
+- Keep raw IO mapping separate from sequence and interlock logic where practical.
+
+## Omron Sysmac Studio
+
+Use for Omron NJ/NX and Sysmac Studio projects.
+
+Conventions:
+
+- Confirm controller family, task cycle, safety CPU boundaries, and retained variable behavior.
+- Use structured variables, programs, FBs, and tasks according to project standards.
+- Use CASE-based sequence engines unless the site standard requires another method.
+- Document retained step words and restart behavior.
+- Keep safety program/interface status separate from standard control logic.
+
 ## Vendor-Neutral Migration Watchpoints
 
 - Boolean polarity and normally-open/normally-closed symbol meaning.

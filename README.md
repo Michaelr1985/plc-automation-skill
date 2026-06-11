@@ -1,13 +1,18 @@
-# PLC Automation Codex Skill
+# Industrial Automation Codex Skill
 
-A custom Codex skill for PLC automation engineering work across IEC 61131-3 languages and common industrial automation platforms.
+A custom Codex skill for complete industrial automation engineering work from project scope through commissioning.
 
 ## What It Covers
 
+- Design-first automation project workflow
+- PLC, HMI, SCADA, network, simulation, FAT/SAT, commissioning, documentation, and estimating
+- Mandatory retentive step-engine sequence standard
 - IEC 61131-3 programming posture and review guidance
 - Ladder Diagram (LD), Structured Text (ST), and Function Block Diagram (FBD) patterns
 - Siemens TIA Portal / STEP 7 conventions
 - Rockwell Studio 5000 Logix Designer conventions
+- Delta ISPSoft / WPLSoft conventions
+- Omron Sysmac Studio conventions
 - Schneider EcoStruxure Machine Expert conventions
 - CODESYS programming standards
 - Mine automation safety and sequencing guidance

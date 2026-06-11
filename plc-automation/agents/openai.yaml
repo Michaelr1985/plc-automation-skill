@@ -1,7 +1,7 @@
 interface:
-  display_name: "PLC Automation"
-  short_description: "PLC standards, safety, and control templates"
-  default_prompt: "Use $plc-automation to review this PLC logic for safety, IEC 61131-3 style, and vendor conventions."
+  display_name: "Industrial Automation"
+  short_description: "PLC, HMI, SCADA, safety, commissioning"
+  default_prompt: "Use $plc-automation to design an automation system from scope through commissioning before generating PLC code."
 
 policy:
   allow_implicit_invocation: true
