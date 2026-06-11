@@ -251,8 +251,10 @@ BEGIN
    #StopAll :=
       #StopPulse OR
       #MainTrip OR
-      ("DB_EFF_Retain".MainSeqStep = 0) OR
-      ("DB_EFF_Retain".MainSeqStep = 90);
+      (NOT "DB_EFF_HMI".ManualMode AND
+         (NOT "DB_EFF_HMI".AutoMode OR
+          ("DB_EFF_Retain".MainSeqStep = 0) OR
+          ("DB_EFF_Retain".MainSeqStep = 90)));
 
    "DB_EFF_IO".VSD_ResetCmd[1] := #ResetPulse;
    "DB_EFF_IO".VSD_ResetCmd[2] := #ResetPulse;

@@ -111,7 +111,7 @@ BEGIN
          END_IF;
 
       10:
-         #RunCmd := #Available AND NOT #StopRequest;
+         #RunCmd := #Available AND NOT #StopRequest AND #StartRequest;
          #SpeedRefPct := #SelectedSpeedPct;
 
          IF #RunningFb THEN
@@ -124,7 +124,7 @@ BEGIN
          END_IF;
 
       20:
-         #RunCmd := #Available AND NOT #StopRequest;
+         #RunCmd := #Available AND NOT #StopRequest AND #StartRequest;
          #SpeedRefPct := #SelectedSpeedPct;
 
          IF #StopRequest OR NOT #RunCmd THEN

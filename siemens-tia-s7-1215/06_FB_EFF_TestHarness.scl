@@ -1,0 +1,226 @@
+FUNCTION_BLOCK "FB_EFF_TestHarness"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+   VAR
+      PrevResetTest : Bool;
+      ResetPulse : Bool;
+      i : Int;
+   END_VAR
+
+BEGIN
+   #ResetPulse := "DB_EFF_Test".ResetTest AND NOT #PrevResetTest;
+   #PrevResetTest := "DB_EFF_Test".ResetTest;
+
+   IF NOT "DB_EFF_Test".EnableTestMode THEN
+      "DB_EFF_Test".TestRunning := FALSE;
+      RETURN;
+   END_IF;
+
+   IF #ResetPulse THEN
+      "DB_EFF_Test".TestRunning := FALSE;
+      "DB_EFF_Test".TestDone := FALSE;
+      "DB_EFF_Test".TestPassed := FALSE;
+      "DB_EFF_Test".TestFailed := FALSE;
+      "DB_EFF_Test".TestStep := 0;
+      "DB_EFF_Test".ActiveTestVSD := 1;
+      "DB_EFF_Test".FailureCode := 0;
+      "DB_EFF_Test".FailureText := '';
+      "DB_EFF_Test".FlowScalingOK := FALSE;
+      "DB_EFF_Test".CommonInputMapOK := FALSE;
+      "DB_EFF_Test".VSDFaultMapOK := FALSE;
+      "DB_EFF_Test".ResetNoStartOK := FALSE;
+      "DB_EFF_Test".OverallMappingOK := FALSE;
+
+      FOR #i := 1 TO 4 DO
+         "DB_EFF_Test".VSDRunCommandOK[#i] := FALSE;
+         "DB_EFF_Test".VSDFeedbackMapOK[#i] := FALSE;
+      END_FOR;
+   END_IF;
+
+   IF "DB_EFF_Test".TestDone OR "DB_EFF_Test".TestFailed THEN
+      RETURN;
+   END_IF;
+
+   "DB_EFF_Test".TestRunning := TRUE;
+
+   CASE "DB_EFF_Test".TestStep OF
+      0:
+         "DB_EFF_IO".EStopHealthy := TRUE;
+         "DB_EFF_IO".ControlPowerHealthy := TRUE;
+         "DB_EFF_IO".DryRunHealthy := TRUE;
+         "DB_EFF_IO".AI_FlowRaw := 16589.0;
+
+         "DB_EFF_HMI".AutoMode := FALSE;
+         "DB_EFF_HMI".ManualMode := FALSE;
+         "DB_EFF_HMI".StartPB := FALSE;
+         "DB_EFF_HMI".StopPB := FALSE;
+         "DB_EFF_HMI".ResetPB := FALSE;
+         "DB_EFF_HMI".RecoveryAckPB := FALSE;
+         "DB_EFF_HMI".FlowSetpoint_m3h := 50.0;
+
+         "DB_EFF_Retain".MainSeqStep := 0;
+         "DB_EFF_Retain".TargetPumps := 0;
+         "DB_EFF_Retain".RecoveryAckRequired := FALSE;
+
+         FOR #i := 1 TO 4 DO
+            "DB_EFF_IO".VSD_Ready[#i] := TRUE;
+            "DB_EFF_IO".VSD_Remote[#i] := TRUE;
+            "DB_EFF_IO".VSD_Running[#i] := FALSE;
+            "DB_EFF_IO".VSD_Fault[#i] := FALSE;
+            "DB_EFF_HMI".ManualVSDStart[#i] := FALSE;
+            "DB_EFF_HMI".ManualVSDSpeedPct[#i] := 50.0;
+            "DB_EFF_HMI".MaintenanceInhibit[#i] := FALSE;
+            "DB_EFF_Retain".VSDSeqStep[#i] := 0;
+            "DB_EFF_Retain".VSDTripLatched[#i] := FALSE;
+         END_FOR;
+
+         "DB_EFF_Test".TestStep := 10;
+
+      10:
+         IF "DB_EFF_Status".FlowSignalValid AND
+            ("DB_EFF_Status".FlowPV_m3h >= 49.0) AND
+            ("DB_EFF_Status".FlowPV_m3h <= 51.0) THEN
+            "DB_EFF_Test".FlowScalingOK := TRUE;
+            "DB_EFF_Test".TestStep := 20;
+         ELSE
+            "DB_EFF_Test".TestFailed := TRUE;
+            "DB_EFF_Test".FailureCode := 100;
+            "DB_EFF_Test".FailureText := 'Flow scaling or AI mapping failed';
+         END_IF;
+
+      20:
+         IF "DB_EFF_Status".AvailablePumps = 4 THEN
+            "DB_EFF_Test".CommonInputMapOK := TRUE;
+            "DB_EFF_Test".ActiveTestVSD := 1;
+            "DB_EFF_Test".TestStep := 100;
+         ELSE
+            "DB_EFF_Test".TestFailed := TRUE;
+            "DB_EFF_Test".FailureCode := 110;
+            "DB_EFF_Test".FailureText := 'Common/VSD ready input mapping failed';
+         END_IF;
+
+      100:
+         FOR #i := 1 TO 4 DO
+            "DB_EFF_HMI".ManualVSDStart[#i] := FALSE;
+            "DB_EFF_IO".VSD_Running[#i] := FALSE;
+         END_FOR;
+
+         "DB_EFF_HMI".ManualMode := TRUE;
+         "DB_EFF_HMI".AutoMode := FALSE;
+         "DB_EFF_HMI".ManualVSDStart["DB_EFF_Test".ActiveTestVSD] := TRUE;
+         "DB_EFF_Test".TestStep := 110;
+
+      110:
+         "DB_EFF_Test".TestStep := 120;
+
+      120:
+         IF "DB_EFF_IO".VSD_RunCmd["DB_EFF_Test".ActiveTestVSD] AND
+            (("DB_EFF_Test".ActiveTestVSD = 1) OR NOT "DB_EFF_IO".VSD_RunCmd[1]) AND
+            (("DB_EFF_Test".ActiveTestVSD = 2) OR NOT "DB_EFF_IO".VSD_RunCmd[2]) AND
+            (("DB_EFF_Test".ActiveTestVSD = 3) OR NOT "DB_EFF_IO".VSD_RunCmd[3]) AND
+            (("DB_EFF_Test".ActiveTestVSD = 4) OR NOT "DB_EFF_IO".VSD_RunCmd[4]) THEN
+            "DB_EFF_Test".VSDRunCommandOK["DB_EFF_Test".ActiveTestVSD] := TRUE;
+            "DB_EFF_IO".VSD_Running["DB_EFF_Test".ActiveTestVSD] := TRUE;
+            "DB_EFF_Test".TestStep := 130;
+         ELSE
+            "DB_EFF_Test".TestFailed := TRUE;
+            "DB_EFF_Test".FailureCode := 200 + "DB_EFF_Test".ActiveTestVSD;
+            "DB_EFF_Test".FailureText := 'VSD run command or isolation failed';
+         END_IF;
+
+      130:
+         "DB_EFF_Test".TestStep := 140;
+
+      140:
+         IF "DB_EFF_Status".VSD_State["DB_EFF_Test".ActiveTestVSD] = 20 THEN
+            "DB_EFF_Test".VSDFeedbackMapOK["DB_EFF_Test".ActiveTestVSD] := TRUE;
+            "DB_EFF_HMI".ManualVSDStart["DB_EFF_Test".ActiveTestVSD] := FALSE;
+            "DB_EFF_IO".VSD_Running["DB_EFF_Test".ActiveTestVSD] := FALSE;
+
+            IF "DB_EFF_Test".ActiveTestVSD < 4 THEN
+               "DB_EFF_Test".ActiveTestVSD := "DB_EFF_Test".ActiveTestVSD + 1;
+               "DB_EFF_Test".TestStep := 100;
+            ELSE
+               "DB_EFF_Test".TestStep := 200;
+            END_IF;
+         ELSE
+            "DB_EFF_Test".TestFailed := TRUE;
+            "DB_EFF_Test".FailureCode := 300 + "DB_EFF_Test".ActiveTestVSD;
+            "DB_EFF_Test".FailureText := 'VSD running feedback mapping failed';
+         END_IF;
+
+      200:
+         FOR #i := 1 TO 4 DO
+            "DB_EFF_HMI".ManualVSDStart[#i] := FALSE;
+            "DB_EFF_IO".VSD_Running[#i] := FALSE;
+            "DB_EFF_IO".VSD_Fault[#i] := FALSE;
+         END_FOR;
+
+         "DB_EFF_IO".VSD_Fault[1] := TRUE;
+         "DB_EFF_HMI".ManualVSDStart[1] := TRUE;
+         "DB_EFF_Test".TestStep := 210;
+
+      210:
+         "DB_EFF_Test".TestStep := 220;
+
+      220:
+         IF "DB_EFF_Alarms".VSD_Faulted[1] AND NOT "DB_EFF_IO".VSD_RunCmd[1] THEN
+            "DB_EFF_Test".VSDFaultMapOK := TRUE;
+            "DB_EFF_IO".VSD_Fault[1] := FALSE;
+            "DB_EFF_HMI".ManualVSDStart[1] := FALSE;
+            "DB_EFF_HMI".ResetPB := TRUE;
+            "DB_EFF_Test".TestStep := 230;
+         ELSE
+            "DB_EFF_Test".TestFailed := TRUE;
+            "DB_EFF_Test".FailureCode := 400;
+            "DB_EFF_Test".FailureText := 'VSD fault/alarm mapping failed';
+         END_IF;
+
+      230:
+         "DB_EFF_HMI".ResetPB := FALSE;
+         "DB_EFF_Test".TestStep := 240;
+
+      240:
+         IF NOT "DB_EFF_IO".VSD_RunCmd[1] AND
+            NOT "DB_EFF_IO".VSD_RunCmd[2] AND
+            NOT "DB_EFF_IO".VSD_RunCmd[3] AND
+            NOT "DB_EFF_IO".VSD_RunCmd[4] THEN
+            "DB_EFF_Test".ResetNoStartOK := TRUE;
+            "DB_EFF_Test".OverallMappingOK :=
+               "DB_EFF_Test".FlowScalingOK AND
+               "DB_EFF_Test".CommonInputMapOK AND
+               "DB_EFF_Test".VSDRunCommandOK[1] AND
+               "DB_EFF_Test".VSDRunCommandOK[2] AND
+               "DB_EFF_Test".VSDRunCommandOK[3] AND
+               "DB_EFF_Test".VSDRunCommandOK[4] AND
+               "DB_EFF_Test".VSDFeedbackMapOK[1] AND
+               "DB_EFF_Test".VSDFeedbackMapOK[2] AND
+               "DB_EFF_Test".VSDFeedbackMapOK[3] AND
+               "DB_EFF_Test".VSDFeedbackMapOK[4] AND
+               "DB_EFF_Test".VSDFaultMapOK AND
+               "DB_EFF_Test".ResetNoStartOK;
+
+            IF "DB_EFF_Test".OverallMappingOK THEN
+               "DB_EFF_Test".TestPassed := TRUE;
+               "DB_EFF_Test".TestDone := TRUE;
+               "DB_EFF_Test".TestRunning := FALSE;
+               "DB_EFF_Test".TestStep := 900;
+               "DB_EFF_Test".FailureCode := 0;
+               "DB_EFF_Test".FailureText := 'All mapping tests passed';
+            ELSE
+               "DB_EFF_Test".TestFailed := TRUE;
+               "DB_EFF_Test".FailureCode := 500;
+               "DB_EFF_Test".FailureText := 'Overall mapping result failed';
+            END_IF;
+         ELSE
+            "DB_EFF_Test".TestFailed := TRUE;
+            "DB_EFF_Test".FailureCode := 410;
+            "DB_EFF_Test".FailureText := 'Reset caused unexpected run command';
+         END_IF;
+
+      ELSE
+         "DB_EFF_Test".TestFailed := TRUE;
+         "DB_EFF_Test".FailureCode := 900;
+         "DB_EFF_Test".FailureText := 'Unknown test step';
+   END_CASE;
+END_FUNCTION_BLOCK

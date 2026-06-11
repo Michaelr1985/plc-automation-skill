@@ -8,6 +8,17 @@ If you insert the call in LAD/FBD instead, place `FB_EFF_Cascade` and select the
 
     "DB_FB_EFF_Cascade"
 
+For PLCSIM/FAT test mode only, call the test harness before the cascade block:
+
+    "DB_FB_EFF_TestHarness"();
+    "DB_FB_EFF_Cascade"();
+
+Enable the test only with:
+
+    "DB_EFF_Test".EnableTestMode := TRUE
+
+Do not enable test mode with live field outputs connected.
+
 Do not import a generated OB1 into a live project unless you intentionally want to replace the existing OB1.
 
 Before downloading to the S7-1215:

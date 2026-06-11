@@ -205,3 +205,43 @@ BEGIN
    PresetFlow_m3h[3] := 75.0;
    PresetFlow_m3h[4] := 100.0;
 END_DATA_BLOCK
+
+DATA_BLOCK "DB_EFF_Test"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+   STRUCT
+      EnableTestMode : Bool;             // Use in PLCSIM/FAT only. Do not enable with live outputs connected.
+      ResetTest : Bool;
+      TestRunning : Bool;
+      TestDone : Bool;
+      TestPassed : Bool;
+      TestFailed : Bool;
+      TestStep : Int;
+      ActiveTestVSD : Int;
+      FailureCode : Int;
+      FailureText : String[80];
+      FlowScalingOK : Bool;
+      CommonInputMapOK : Bool;
+      VSDRunCommandOK : Array[1..4] of Bool;
+      VSDFeedbackMapOK : Array[1..4] of Bool;
+      VSDFaultMapOK : Bool;
+      ResetNoStartOK : Bool;
+      OverallMappingOK : Bool;
+   END_STRUCT;
+BEGIN
+   EnableTestMode := FALSE;
+   ResetTest := FALSE;
+   TestRunning := FALSE;
+   TestDone := FALSE;
+   TestPassed := FALSE;
+   TestFailed := FALSE;
+   TestStep := 0;
+   ActiveTestVSD := 1;
+   FailureCode := 0;
+   FailureText := '';
+   FlowScalingOK := FALSE;
+   CommonInputMapOK := FALSE;
+   VSDFaultMapOK := FALSE;
+   ResetNoStartOK := FALSE;
+   OverallMappingOK := FALSE;
+END_DATA_BLOCK
