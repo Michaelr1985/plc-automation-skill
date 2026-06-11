@@ -1,0 +1,20 @@
+Add this call manually in OB1 after generating the source blocks.
+
+For an SCL OB1 network, use the Siemens single-instance DB call syntax:
+
+    "DB_FB_EFF_Cascade"();
+
+If you insert the call in LAD/FBD instead, place `FB_EFF_Cascade` and select the generated instance DB:
+
+    "DB_FB_EFF_Cascade"
+
+Do not import a generated OB1 into a live project unless you intentionally want to replace the existing OB1.
+
+Before downloading to the S7-1215:
+
+1. Map the real hardware, Profinet drive telegram bits/words, or hardwired IO to DB_EFF_IO.
+2. Mark required DB_EFF_Retain members retentive if TIA does not retain them from source.
+3. Confirm IFM flow meter scaling in DB_EFF_Config.
+4. Confirm Danfoss VSD command/status profile.
+5. Compile the PLC and correct any device-version instruction messages from TIA.
+6. Test in PLCSIM or a controlled FAT setup before site download.

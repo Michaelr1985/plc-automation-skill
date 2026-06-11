@@ -1,0 +1,156 @@
+FUNCTION_BLOCK "FB_EFF_VSD"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+   VAR_INPUT
+      EnableAuto : Bool;
+      ManualMode : Bool;
+      ManualStart : Bool;
+      AutoStart : Bool;
+      StopRequest : Bool;
+      ResetRequest : Bool;
+      Ready : Bool;
+      RunningFb : Bool;
+      FaultIn : Bool;
+      Remote : Bool;
+      EStopHealthy : Bool;
+      DryRunHealthy : Bool;
+      MaintenanceInhibit : Bool;
+      SpeedDemandPct : Real;
+      ManualSpeedPct : Real;
+      MinSpeedPct : Real;
+      MaxSpeedPct : Real;
+      StartTimeout : Time;
+   END_VAR
+
+   VAR_OUTPUT
+      RunCmd : Bool;
+      SpeedRefPct : Real;
+      Available : Bool;
+      Faulted : Bool;
+      StartFeedbackFault : Bool;
+   END_VAR
+
+   VAR_IN_OUT
+      State : Int;
+      TripLatched : Bool;
+      Starts : DInt;
+      Runtime_h : Real;
+   END_VAR
+
+   VAR
+      StartTimer : TON;
+      PrevResetRequest : Bool;
+      ResetPulse : Bool;
+      TripActive : Bool;
+      StartRequest : Bool;
+      SelectedSpeedPct : Real;
+   END_VAR
+
+BEGIN
+   #ResetPulse := #ResetRequest AND NOT #PrevResetRequest;
+   #PrevResetRequest := #ResetRequest;
+
+   #StartTimer(IN := #RunCmd AND NOT #RunningFb, PT := #StartTimeout);
+   #StartFeedbackFault := #StartTimer.Q;
+
+   #TripActive :=
+      NOT #EStopHealthy OR
+      NOT #DryRunHealthy OR
+      NOT #Ready OR
+      NOT #Remote OR
+      #FaultIn OR
+      #StartFeedbackFault;
+
+   IF #TripActive THEN
+      #TripLatched := TRUE;
+      #State := 90;
+   END_IF;
+
+   IF #ResetPulse AND NOT #TripActive THEN
+      #TripLatched := FALSE;
+      #StartFeedbackFault := FALSE;
+      IF #State = 90 THEN
+         #State := 0;
+      END_IF;
+   END_IF;
+
+   #Available :=
+      #Ready AND
+      #Remote AND
+      NOT #FaultIn AND
+      NOT #MaintenanceInhibit AND
+      #EStopHealthy AND
+      #DryRunHealthy AND
+      NOT #TripLatched;
+
+   #Faulted := #TripLatched OR #TripActive;
+
+   IF #ManualMode THEN
+      #SelectedSpeedPct := #ManualSpeedPct;
+   ELSE
+      #SelectedSpeedPct := #SpeedDemandPct;
+   END_IF;
+
+   IF #SelectedSpeedPct < #MinSpeedPct THEN
+      #SelectedSpeedPct := #MinSpeedPct;
+   END_IF;
+
+   IF #SelectedSpeedPct > #MaxSpeedPct THEN
+      #SelectedSpeedPct := #MaxSpeedPct;
+   END_IF;
+
+   #StartRequest := (#EnableAuto AND #AutoStart) OR (#ManualMode AND #ManualStart);
+
+   CASE #State OF
+      0:
+         #RunCmd := FALSE;
+         #SpeedRefPct := 0.0;
+
+         IF #StartRequest AND #Available AND NOT #StopRequest THEN
+            #State := 10;
+         END_IF;
+
+      10:
+         #RunCmd := #Available AND NOT #StopRequest;
+         #SpeedRefPct := #SelectedSpeedPct;
+
+         IF #RunningFb THEN
+            #Starts := #Starts + 1;
+            #State := 20;
+         ELSIF #StopRequest OR NOT #Available THEN
+            #RunCmd := FALSE;
+            #SpeedRefPct := 0.0;
+            #State := 0;
+         END_IF;
+
+      20:
+         #RunCmd := #Available AND NOT #StopRequest;
+         #SpeedRefPct := #SelectedSpeedPct;
+
+         IF #StopRequest OR NOT #RunCmd THEN
+            #State := 30;
+         END_IF;
+
+      30:
+         #RunCmd := FALSE;
+         #SpeedRefPct := 0.0;
+
+         IF NOT #RunningFb THEN
+            #State := 0;
+         END_IF;
+
+      90:
+         #RunCmd := FALSE;
+         #SpeedRefPct := 0.0;
+
+         IF #ResetPulse AND NOT #TripActive THEN
+            #TripLatched := FALSE;
+            #State := 0;
+         END_IF;
+
+      ELSE
+         #RunCmd := FALSE;
+         #SpeedRefPct := 0.0;
+         #State := 90;
+   END_CASE;
+END_FUNCTION_BLOCK

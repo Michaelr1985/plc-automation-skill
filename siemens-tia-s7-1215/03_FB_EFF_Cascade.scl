@@ -1,0 +1,423 @@
+FUNCTION_BLOCK "FB_EFF_Cascade"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+   VAR
+      VSD01 : "FB_EFF_VSD";
+      VSD02 : "FB_EFF_VSD";
+      VSD03 : "FB_EFF_VSD";
+      VSD04 : "FB_EFF_VSD";
+      CascadeTimer : TON;
+      DestageTimer : TON;
+      PrevStartPB : Bool;
+      PrevStopPB : Bool;
+      PrevResetPB : Bool;
+      PrevRecoveryAckPB : Bool;
+      StartPulse : Bool;
+      StopPulse : Bool;
+      ResetPulse : Bool;
+      RecoveryAckPulse : Bool;
+      StartVSD01 : Bool;
+      StartVSD02 : Bool;
+      StartVSD03 : Bool;
+      StartVSD04 : Bool;
+      StopAll : Bool;
+      MainTrip : Bool;
+      PrecheckOK : Bool;
+      FlowSpanRaw : Real;
+      FlowSpanEng : Real;
+      AvailableCount : Int;
+      RunningCount : Int;
+      Needed : Int;
+      DemandHigh : Bool;
+      DemandLow : Bool;
+      FirstScanDone : Bool;
+   END_VAR
+
+   VAR_TEMP
+      i : Int;
+      RawOffset : Real;
+   END_VAR
+
+BEGIN
+   #StartPulse := "DB_EFF_HMI".StartPB AND NOT #PrevStartPB;
+   #StopPulse := "DB_EFF_HMI".StopPB AND NOT #PrevStopPB;
+   #ResetPulse := "DB_EFF_HMI".ResetPB AND NOT #PrevResetPB;
+   #RecoveryAckPulse := "DB_EFF_HMI".RecoveryAckPB AND NOT #PrevRecoveryAckPB;
+
+   #PrevStartPB := "DB_EFF_HMI".StartPB;
+   #PrevStopPB := "DB_EFF_HMI".StopPB;
+   #PrevResetPB := "DB_EFF_HMI".ResetPB;
+   #PrevRecoveryAckPB := "DB_EFF_HMI".RecoveryAckPB;
+
+   IF NOT #FirstScanDone THEN
+      #FirstScanDone := TRUE;
+      "DB_EFF_Diagnostics".FirstScanComplete := TRUE;
+
+      IF "DB_EFF_Config".RecoveryAckRequiredOnRestart AND
+         (("DB_EFF_Retain".MainSeqStep = 30) OR ("DB_EFF_Retain".MainSeqStep = 40)) THEN
+         "DB_EFF_Retain".RecoveryAckRequired := TRUE;
+      END_IF;
+
+      "DB_EFF_IO".VSD_RunCmd[1] := FALSE;
+      "DB_EFF_IO".VSD_RunCmd[2] := FALSE;
+      "DB_EFF_IO".VSD_RunCmd[3] := FALSE;
+      "DB_EFF_IO".VSD_RunCmd[4] := FALSE;
+      "DB_EFF_IO".VSD_SpeedRefPct[1] := 0.0;
+      "DB_EFF_IO".VSD_SpeedRefPct[2] := 0.0;
+      "DB_EFF_IO".VSD_SpeedRefPct[3] := 0.0;
+      "DB_EFF_IO".VSD_SpeedRefPct[4] := 0.0;
+   END_IF;
+
+   IF #RecoveryAckPulse THEN
+      "DB_EFF_Retain".RecoveryAckRequired := FALSE;
+   END_IF;
+
+   #FlowSpanRaw := "DB_EFF_Config".FlowRawMax - "DB_EFF_Config".FlowRawMin;
+   #FlowSpanEng := "DB_EFF_Config".FlowEngMax_m3h - "DB_EFF_Config".FlowEngMin_m3h;
+
+   "DB_EFF_Status".FlowSignalValid :=
+      (#FlowSpanRaw > 0.0) AND
+      ("DB_EFF_IO".AI_FlowRaw >= "DB_EFF_Config".FlowBadLowRaw) AND
+      ("DB_EFF_IO".AI_FlowRaw <= "DB_EFF_Config".FlowBadHighRaw);
+
+   IF "DB_EFF_Status".FlowSignalValid THEN
+      #RawOffset := "DB_EFF_IO".AI_FlowRaw - "DB_EFF_Config".FlowRawMin;
+      "DB_EFF_Status".FlowPV_m3h :=
+         (#RawOffset / #FlowSpanRaw) * #FlowSpanEng + "DB_EFF_Config".FlowEngMin_m3h;
+   ELSE
+      "DB_EFF_Status".FlowPV_m3h := 0.0;
+   END_IF;
+
+   "DB_EFF_Status".FlowError_m3h :=
+      "DB_EFF_HMI".FlowSetpoint_m3h - "DB_EFF_Status".FlowPV_m3h;
+
+   "DB_EFF_Status".SpeedDemandPct :=
+      "DB_EFF_Config".BaseSpeedPct +
+      ("DB_EFF_Status".FlowError_m3h * "DB_EFF_Config".FlowGainPctPer_m3h);
+
+   IF "DB_EFF_Status".SpeedDemandPct < "DB_EFF_Config".MinSpeedPct THEN
+      "DB_EFF_Status".SpeedDemandPct := "DB_EFF_Config".MinSpeedPct;
+   END_IF;
+
+   IF "DB_EFF_Status".SpeedDemandPct > "DB_EFF_Config".MaxSpeedPct THEN
+      "DB_EFF_Status".SpeedDemandPct := "DB_EFF_Config".MaxSpeedPct;
+   END_IF;
+
+   #AvailableCount := 0;
+   #RunningCount := 0;
+
+   FOR #i := 1 TO 4 DO
+      IF "DB_EFF_IO".VSD_Ready[#i] AND
+         "DB_EFF_IO".VSD_Remote[#i] AND
+         NOT "DB_EFF_IO".VSD_Fault[#i] AND
+         NOT "DB_EFF_HMI".MaintenanceInhibit[#i] THEN
+         #AvailableCount := #AvailableCount + 1;
+      END_IF;
+
+      IF "DB_EFF_IO".VSD_Running[#i] THEN
+         #RunningCount := #RunningCount + 1;
+      END_IF;
+   END_FOR;
+
+   #MainTrip :=
+      NOT "DB_EFF_IO".EStopHealthy OR
+      NOT "DB_EFF_IO".ControlPowerHealthy OR
+      NOT "DB_EFF_IO".DryRunHealthy OR
+      NOT "DB_EFF_Status".FlowSignalValid OR
+      (("DB_EFF_Retain".MainSeqStep <> 0) AND (#AvailableCount = 0));
+
+   IF #MainTrip THEN
+      "DB_EFF_Retain".MainSeqStep := 90;
+      "DB_EFF_Retain".TargetPumps := 0;
+   END_IF;
+
+   #PrecheckOK :=
+      "DB_EFF_IO".EStopHealthy AND
+      "DB_EFF_IO".ControlPowerHealthy AND
+      "DB_EFF_IO".DryRunHealthy AND
+      "DB_EFF_Status".FlowSignalValid AND
+      (#AvailableCount > 0) AND
+      NOT "DB_EFF_Retain".RecoveryAckRequired;
+
+   #DemandHigh :=
+      ("DB_EFF_Status".SpeedDemandPct >= "DB_EFF_Config".CascadeStartPct) AND
+      ("DB_EFF_Status".FlowPV_m3h < "DB_EFF_HMI".FlowSetpoint_m3h);
+
+   #DemandLow :=
+      ("DB_EFF_Status".SpeedDemandPct <= "DB_EFF_Config".CascadeStopPct) AND
+      (#RunningCount > 1);
+
+   #CascadeTimer(IN := #DemandHigh AND ("DB_EFF_Retain".MainSeqStep = 30), PT := "DB_EFF_Config".CascadeDelay);
+   #DestageTimer(IN := #DemandLow AND (("DB_EFF_Retain".MainSeqStep = 30) OR ("DB_EFF_Retain".MainSeqStep = 40)), PT := "DB_EFF_Config".DestageDelay);
+
+   IF #ResetPulse AND NOT #MainTrip THEN
+      IF "DB_EFF_Retain".MainSeqStep = 90 THEN
+         "DB_EFF_Retain".MainSeqStep := 0;
+      END_IF;
+   END_IF;
+
+   IF "DB_EFF_Retain".DutyLeadIndex < 1 THEN
+      "DB_EFF_Retain".DutyLeadIndex := 1;
+   END_IF;
+
+   IF "DB_EFF_Retain".DutyLeadIndex > 4 THEN
+      "DB_EFF_Retain".DutyLeadIndex := 1;
+   END_IF;
+
+   CASE "DB_EFF_Retain".MainSeqStep OF
+      0:
+         "DB_EFF_Retain".TargetPumps := 0;
+
+         IF #StartPulse AND "DB_EFF_HMI".AutoMode AND #PrecheckOK THEN
+            "DB_EFF_Retain".MainSeqStep := 10;
+         END_IF;
+
+      10:
+         IF NOT #PrecheckOK THEN
+            "DB_EFF_Retain".MainSeqStep := 90;
+         ELSE
+            "DB_EFF_Retain".MainSeqStep := 20;
+         END_IF;
+
+      20:
+         "DB_EFF_Retain".TargetPumps := 1;
+
+         IF #RunningCount > 0 THEN
+            "DB_EFF_Retain".MainSeqStep := 30;
+         ELSIF #StopPulse OR NOT "DB_EFF_HMI".AutoMode THEN
+            "DB_EFF_Retain".MainSeqStep := 0;
+         END_IF;
+
+      30:
+         IF #StopPulse OR NOT "DB_EFF_HMI".AutoMode THEN
+            "DB_EFF_Retain".MainSeqStep := 0;
+         ELSIF #CascadeTimer.Q THEN
+            "DB_EFF_Retain".MainSeqStep := 40;
+         ELSIF #DestageTimer.Q AND ("DB_EFF_Retain".TargetPumps > 1) THEN
+            "DB_EFF_Retain".TargetPumps := "DB_EFF_Retain".TargetPumps - 1;
+         END_IF;
+
+      40:
+         IF "DB_EFF_Retain".TargetPumps < #AvailableCount THEN
+            "DB_EFF_Retain".TargetPumps := "DB_EFF_Retain".TargetPumps + 1;
+         END_IF;
+         "DB_EFF_Retain".MainSeqStep := 30;
+
+      90:
+         "DB_EFF_Retain".TargetPumps := 0;
+
+         IF #ResetPulse AND NOT #MainTrip THEN
+            "DB_EFF_Retain".MainSeqStep := 0;
+         END_IF;
+
+      ELSE
+         "DB_EFF_Retain".MainSeqStep := 90;
+   END_CASE;
+
+   #StartVSD01 := FALSE;
+   #StartVSD02 := FALSE;
+   #StartVSD03 := FALSE;
+   #StartVSD04 := FALSE;
+   #Needed := "DB_EFF_Retain".TargetPumps;
+
+   IF ("DB_EFF_Retain".MainSeqStep = 20) OR
+      ("DB_EFF_Retain".MainSeqStep = 30) OR
+      ("DB_EFF_Retain".MainSeqStep = 40) THEN
+
+      CASE "DB_EFF_Retain".DutyLeadIndex OF
+         1:
+            IF "DB_EFF_Status".VSD_Available[1] AND (#Needed > 0) THEN #StartVSD01 := TRUE; #Needed := #Needed - 1; END_IF;
+            IF "DB_EFF_Status".VSD_Available[2] AND (#Needed > 0) THEN #StartVSD02 := TRUE; #Needed := #Needed - 1; END_IF;
+            IF "DB_EFF_Status".VSD_Available[3] AND (#Needed > 0) THEN #StartVSD03 := TRUE; #Needed := #Needed - 1; END_IF;
+            IF "DB_EFF_Status".VSD_Available[4] AND (#Needed > 0) THEN #StartVSD04 := TRUE; #Needed := #Needed - 1; END_IF;
+         2:
+            IF "DB_EFF_Status".VSD_Available[2] AND (#Needed > 0) THEN #StartVSD02 := TRUE; #Needed := #Needed - 1; END_IF;
+            IF "DB_EFF_Status".VSD_Available[3] AND (#Needed > 0) THEN #StartVSD03 := TRUE; #Needed := #Needed - 1; END_IF;
+            IF "DB_EFF_Status".VSD_Available[4] AND (#Needed > 0) THEN #StartVSD04 := TRUE; #Needed := #Needed - 1; END_IF;
+            IF "DB_EFF_Status".VSD_Available[1] AND (#Needed > 0) THEN #StartVSD01 := TRUE; #Needed := #Needed - 1; END_IF;
+         3:
+            IF "DB_EFF_Status".VSD_Available[3] AND (#Needed > 0) THEN #StartVSD03 := TRUE; #Needed := #Needed - 1; END_IF;
+            IF "DB_EFF_Status".VSD_Available[4] AND (#Needed > 0) THEN #StartVSD04 := TRUE; #Needed := #Needed - 1; END_IF;
+            IF "DB_EFF_Status".VSD_Available[1] AND (#Needed > 0) THEN #StartVSD01 := TRUE; #Needed := #Needed - 1; END_IF;
+            IF "DB_EFF_Status".VSD_Available[2] AND (#Needed > 0) THEN #StartVSD02 := TRUE; #Needed := #Needed - 1; END_IF;
+         4:
+            IF "DB_EFF_Status".VSD_Available[4] AND (#Needed > 0) THEN #StartVSD04 := TRUE; #Needed := #Needed - 1; END_IF;
+            IF "DB_EFF_Status".VSD_Available[1] AND (#Needed > 0) THEN #StartVSD01 := TRUE; #Needed := #Needed - 1; END_IF;
+            IF "DB_EFF_Status".VSD_Available[2] AND (#Needed > 0) THEN #StartVSD02 := TRUE; #Needed := #Needed - 1; END_IF;
+            IF "DB_EFF_Status".VSD_Available[3] AND (#Needed > 0) THEN #StartVSD03 := TRUE; #Needed := #Needed - 1; END_IF;
+      END_CASE;
+   END_IF;
+
+   #StopAll :=
+      #StopPulse OR
+      #MainTrip OR
+      ("DB_EFF_Retain".MainSeqStep = 0) OR
+      ("DB_EFF_Retain".MainSeqStep = 90);
+
+   "DB_EFF_IO".VSD_ResetCmd[1] := #ResetPulse;
+   "DB_EFF_IO".VSD_ResetCmd[2] := #ResetPulse;
+   "DB_EFF_IO".VSD_ResetCmd[3] := #ResetPulse;
+   "DB_EFF_IO".VSD_ResetCmd[4] := #ResetPulse;
+
+   #VSD01(
+      EnableAuto := "DB_EFF_HMI".AutoMode,
+      ManualMode := "DB_EFF_HMI".ManualMode,
+      ManualStart := "DB_EFF_HMI".ManualVSDStart[1],
+      AutoStart := #StartVSD01,
+      StopRequest := #StopAll,
+      ResetRequest := #ResetPulse,
+      Ready := "DB_EFF_IO".VSD_Ready[1],
+      RunningFb := "DB_EFF_IO".VSD_Running[1],
+      FaultIn := "DB_EFF_IO".VSD_Fault[1],
+      Remote := "DB_EFF_IO".VSD_Remote[1],
+      EStopHealthy := "DB_EFF_IO".EStopHealthy,
+      DryRunHealthy := "DB_EFF_IO".DryRunHealthy,
+      MaintenanceInhibit := "DB_EFF_HMI".MaintenanceInhibit[1],
+      SpeedDemandPct := "DB_EFF_Status".SpeedDemandPct,
+      ManualSpeedPct := "DB_EFF_HMI".ManualVSDSpeedPct[1],
+      MinSpeedPct := "DB_EFF_Config".MinSpeedPct,
+      MaxSpeedPct := "DB_EFF_Config".MaxSpeedPct,
+      StartTimeout := "DB_EFF_Config".StartTimeout,
+      RunCmd => "DB_EFF_IO".VSD_RunCmd[1],
+      SpeedRefPct => "DB_EFF_IO".VSD_SpeedRefPct[1],
+      Available => "DB_EFF_Status".VSD_Available[1],
+      Faulted => "DB_EFF_Status".VSD_Faulted[1],
+      State := "DB_EFF_Retain".VSDSeqStep[1],
+      TripLatched := "DB_EFF_Retain".VSDTripLatched[1],
+      Starts := "DB_EFF_Retain".VSDStarts[1],
+      Runtime_h := "DB_EFF_Retain".VSDRuntime_h[1]);
+
+   #VSD02(
+      EnableAuto := "DB_EFF_HMI".AutoMode,
+      ManualMode := "DB_EFF_HMI".ManualMode,
+      ManualStart := "DB_EFF_HMI".ManualVSDStart[2],
+      AutoStart := #StartVSD02,
+      StopRequest := #StopAll,
+      ResetRequest := #ResetPulse,
+      Ready := "DB_EFF_IO".VSD_Ready[2],
+      RunningFb := "DB_EFF_IO".VSD_Running[2],
+      FaultIn := "DB_EFF_IO".VSD_Fault[2],
+      Remote := "DB_EFF_IO".VSD_Remote[2],
+      EStopHealthy := "DB_EFF_IO".EStopHealthy,
+      DryRunHealthy := "DB_EFF_IO".DryRunHealthy,
+      MaintenanceInhibit := "DB_EFF_HMI".MaintenanceInhibit[2],
+      SpeedDemandPct := "DB_EFF_Status".SpeedDemandPct,
+      ManualSpeedPct := "DB_EFF_HMI".ManualVSDSpeedPct[2],
+      MinSpeedPct := "DB_EFF_Config".MinSpeedPct,
+      MaxSpeedPct := "DB_EFF_Config".MaxSpeedPct,
+      StartTimeout := "DB_EFF_Config".StartTimeout,
+      RunCmd => "DB_EFF_IO".VSD_RunCmd[2],
+      SpeedRefPct => "DB_EFF_IO".VSD_SpeedRefPct[2],
+      Available => "DB_EFF_Status".VSD_Available[2],
+      Faulted => "DB_EFF_Status".VSD_Faulted[2],
+      State := "DB_EFF_Retain".VSDSeqStep[2],
+      TripLatched := "DB_EFF_Retain".VSDTripLatched[2],
+      Starts := "DB_EFF_Retain".VSDStarts[2],
+      Runtime_h := "DB_EFF_Retain".VSDRuntime_h[2]);
+
+   #VSD03(
+      EnableAuto := "DB_EFF_HMI".AutoMode,
+      ManualMode := "DB_EFF_HMI".ManualMode,
+      ManualStart := "DB_EFF_HMI".ManualVSDStart[3],
+      AutoStart := #StartVSD03,
+      StopRequest := #StopAll,
+      ResetRequest := #ResetPulse,
+      Ready := "DB_EFF_IO".VSD_Ready[3],
+      RunningFb := "DB_EFF_IO".VSD_Running[3],
+      FaultIn := "DB_EFF_IO".VSD_Fault[3],
+      Remote := "DB_EFF_IO".VSD_Remote[3],
+      EStopHealthy := "DB_EFF_IO".EStopHealthy,
+      DryRunHealthy := "DB_EFF_IO".DryRunHealthy,
+      MaintenanceInhibit := "DB_EFF_HMI".MaintenanceInhibit[3],
+      SpeedDemandPct := "DB_EFF_Status".SpeedDemandPct,
+      ManualSpeedPct := "DB_EFF_HMI".ManualVSDSpeedPct[3],
+      MinSpeedPct := "DB_EFF_Config".MinSpeedPct,
+      MaxSpeedPct := "DB_EFF_Config".MaxSpeedPct,
+      StartTimeout := "DB_EFF_Config".StartTimeout,
+      RunCmd => "DB_EFF_IO".VSD_RunCmd[3],
+      SpeedRefPct => "DB_EFF_IO".VSD_SpeedRefPct[3],
+      Available => "DB_EFF_Status".VSD_Available[3],
+      Faulted => "DB_EFF_Status".VSD_Faulted[3],
+      State := "DB_EFF_Retain".VSDSeqStep[3],
+      TripLatched := "DB_EFF_Retain".VSDTripLatched[3],
+      Starts := "DB_EFF_Retain".VSDStarts[3],
+      Runtime_h := "DB_EFF_Retain".VSDRuntime_h[3]);
+
+   #VSD04(
+      EnableAuto := "DB_EFF_HMI".AutoMode,
+      ManualMode := "DB_EFF_HMI".ManualMode,
+      ManualStart := "DB_EFF_HMI".ManualVSDStart[4],
+      AutoStart := #StartVSD04,
+      StopRequest := #StopAll,
+      ResetRequest := #ResetPulse,
+      Ready := "DB_EFF_IO".VSD_Ready[4],
+      RunningFb := "DB_EFF_IO".VSD_Running[4],
+      FaultIn := "DB_EFF_IO".VSD_Fault[4],
+      Remote := "DB_EFF_IO".VSD_Remote[4],
+      EStopHealthy := "DB_EFF_IO".EStopHealthy,
+      DryRunHealthy := "DB_EFF_IO".DryRunHealthy,
+      MaintenanceInhibit := "DB_EFF_HMI".MaintenanceInhibit[4],
+      SpeedDemandPct := "DB_EFF_Status".SpeedDemandPct,
+      ManualSpeedPct := "DB_EFF_HMI".ManualVSDSpeedPct[4],
+      MinSpeedPct := "DB_EFF_Config".MinSpeedPct,
+      MaxSpeedPct := "DB_EFF_Config".MaxSpeedPct,
+      StartTimeout := "DB_EFF_Config".StartTimeout,
+      RunCmd => "DB_EFF_IO".VSD_RunCmd[4],
+      SpeedRefPct => "DB_EFF_IO".VSD_SpeedRefPct[4],
+      Available => "DB_EFF_Status".VSD_Available[4],
+      Faulted => "DB_EFF_Status".VSD_Faulted[4],
+      State := "DB_EFF_Retain".VSDSeqStep[4],
+      TripLatched := "DB_EFF_Retain".VSDTripLatched[4],
+      Starts := "DB_EFF_Retain".VSDStarts[4],
+      Runtime_h := "DB_EFF_Retain".VSDRuntime_h[4]);
+
+   #AvailableCount := 0;
+   FOR #i := 1 TO 4 DO
+      IF "DB_EFF_Status".VSD_Available[#i] THEN
+         #AvailableCount := #AvailableCount + 1;
+      END_IF;
+      "DB_EFF_Status".VSD_State[#i] := "DB_EFF_Retain".VSDSeqStep[#i];
+      "DB_EFF_Alarms".VSD_Faulted[#i] := "DB_EFF_Status".VSD_Faulted[#i];
+      "DB_EFF_Alarms".VSD_NotReady[#i] := NOT "DB_EFF_IO".VSD_Ready[#i];
+      "DB_EFF_Alarms".VSD_NotRemote[#i] := NOT "DB_EFF_IO".VSD_Remote[#i];
+   END_FOR;
+
+   "DB_EFF_Status".AvailablePumps := #AvailableCount;
+   "DB_EFF_Status".ActivePumps := #RunningCount;
+   "DB_EFF_Status".MainSeqStep := "DB_EFF_Retain".MainSeqStep;
+   "DB_EFF_Status".TargetPumps := "DB_EFF_Retain".TargetPumps;
+   "DB_EFF_Status".DutyLeadIndex := "DB_EFF_Retain".DutyLeadIndex;
+   "DB_EFF_Status".AutoRunning :=
+      ("DB_EFF_Retain".MainSeqStep = 20) OR
+      ("DB_EFF_Retain".MainSeqStep = 30) OR
+      ("DB_EFF_Retain".MainSeqStep = 40);
+   "DB_EFF_Status".RecoveryAckRequired := "DB_EFF_Retain".RecoveryAckRequired;
+
+   "DB_EFF_Alarms".EStopUnhealthy := NOT "DB_EFF_IO".EStopHealthy;
+   "DB_EFF_Alarms".ControlPowerUnhealthy := NOT "DB_EFF_IO".ControlPowerHealthy;
+   "DB_EFF_Alarms".DryRunTrip := NOT "DB_EFF_IO".DryRunHealthy;
+   "DB_EFF_Alarms".FlowSignalInvalid := NOT "DB_EFF_Status".FlowSignalValid;
+   "DB_EFF_Alarms".NoVSDAvailable := (#AvailableCount = 0);
+   "DB_EFF_Alarms".FlowSetpointNotAchieved :=
+      ("DB_EFF_Retain".MainSeqStep = 30) AND
+      #DemandHigh AND
+      ("DB_EFF_Retain".TargetPumps >= #AvailableCount);
+   "DB_EFF_Alarms".RecoveryAckRequired := "DB_EFF_Retain".RecoveryAckRequired;
+
+   "DB_EFF_Status".CommonFault :=
+      "DB_EFF_Alarms".EStopUnhealthy OR
+      "DB_EFF_Alarms".ControlPowerUnhealthy OR
+      "DB_EFF_Alarms".DryRunTrip OR
+      "DB_EFF_Alarms".FlowSignalInvalid OR
+      "DB_EFF_Alarms".NoVSDAvailable OR
+      "DB_EFF_Status".VSD_Faulted[1] OR
+      "DB_EFF_Status".VSD_Faulted[2] OR
+      "DB_EFF_Status".VSD_Faulted[3] OR
+      "DB_EFF_Status".VSD_Faulted[4];
+
+   "DB_EFF_IO".Pilot_Run := "DB_EFF_Status".AutoRunning OR (#RunningCount > 0);
+   "DB_EFF_IO".Pilot_Fault := "DB_EFF_Status".CommonFault;
+   "DB_EFF_IO".Pilot_Auto := "DB_EFF_HMI".AutoMode;
+   "DB_EFF_IO".RemoteRunning := (#RunningCount > 0);
+   "DB_EFF_IO".RemoteFault := "DB_EFF_Status".CommonFault;
+END_FUNCTION_BLOCK

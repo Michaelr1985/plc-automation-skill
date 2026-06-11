@@ -1,0 +1,207 @@
+DATA_BLOCK "DB_EFF_IO"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+   STRUCT
+      EStopHealthy : Bool;      // Monitor only. Safety removal must be hardwired.
+      ControlPowerHealthy : Bool;
+      DryRunHealthy : Bool;
+      AI_FlowRaw : Real;        // Raw/scaled value from IFM flow meter source.
+      VSD_Ready : Array[1..4] of Bool;
+      VSD_Running : Array[1..4] of Bool;
+      VSD_Fault : Array[1..4] of Bool;
+      VSD_Remote : Array[1..4] of Bool;
+      VSD_RunCmd : Array[1..4] of Bool;
+      VSD_ResetCmd : Array[1..4] of Bool;
+      VSD_SpeedRefPct : Array[1..4] of Real;
+      Pilot_Run : Bool;
+      Pilot_Fault : Bool;
+      Pilot_Auto : Bool;
+      RemoteRunning : Bool;
+      RemoteFault : Bool;
+   END_STRUCT;
+BEGIN
+   EStopHealthy := FALSE;
+   ControlPowerHealthy := FALSE;
+   DryRunHealthy := FALSE;
+   AI_FlowRaw := 0.0;
+   Pilot_Run := FALSE;
+   Pilot_Fault := FALSE;
+   Pilot_Auto := FALSE;
+   RemoteRunning := FALSE;
+   RemoteFault := FALSE;
+END_DATA_BLOCK
+
+DATA_BLOCK "DB_EFF_HMI"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+   STRUCT
+      AutoMode : Bool;
+      ManualMode : Bool;
+      StartPB : Bool;
+      StopPB : Bool;
+      ResetPB : Bool;
+      RecoveryAckPB : Bool;
+      FlowSetpoint_m3h : Real;
+      ManualVSDStart : Array[1..4] of Bool;
+      ManualVSDSpeedPct : Array[1..4] of Real;
+      MaintenanceInhibit : Array[1..4] of Bool;
+   END_STRUCT;
+BEGIN
+   AutoMode := FALSE;
+   ManualMode := FALSE;
+   StartPB := FALSE;
+   StopPB := FALSE;
+   ResetPB := FALSE;
+   RecoveryAckPB := FALSE;
+   FlowSetpoint_m3h := 50.0;
+END_DATA_BLOCK
+
+DATA_BLOCK "DB_EFF_Config"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+   STRUCT
+      FlowRawMin : Real;
+      FlowRawMax : Real;
+      FlowEngMin_m3h : Real;
+      FlowEngMax_m3h : Real;
+      FlowBadLowRaw : Real;
+      FlowBadHighRaw : Real;
+      MinSpeedPct : Real;
+      MaxSpeedPct : Real;
+      BaseSpeedPct : Real;
+      CascadeStartPct : Real;
+      CascadeStopPct : Real;
+      FlowGainPctPer_m3h : Real;
+      CascadeDelay : Time;
+      DestageDelay : Time;
+      StartTimeout : Time;
+      RecoveryAckRequiredOnRestart : Bool;
+   END_STRUCT;
+BEGIN
+   FlowRawMin := 5530.0;                 // Typical Siemens raw count for 4 mA. Confirm on site.
+   FlowRawMax := 27648.0;                // Typical Siemens raw count for 20 mA. Confirm on site.
+   FlowEngMin_m3h := 0.0;
+   FlowEngMax_m3h := 100.0;              // Confirm IFM meter range.
+   FlowBadLowRaw := 4000.0;
+   FlowBadHighRaw := 30000.0;
+   MinSpeedPct := 25.0;
+   MaxSpeedPct := 100.0;
+   BaseSpeedPct := 35.0;
+   CascadeStartPct := 92.0;
+   CascadeStopPct := 45.0;
+   FlowGainPctPer_m3h := 1.0;
+   CascadeDelay := T#20s;
+   DestageDelay := T#45s;
+   StartTimeout := T#10s;
+   RecoveryAckRequiredOnRestart := TRUE;
+END_DATA_BLOCK
+
+DATA_BLOCK "DB_EFF_Status"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+   STRUCT
+      FlowPV_m3h : Real;
+      FlowSignalValid : Bool;
+      FlowError_m3h : Real;
+      SpeedDemandPct : Real;
+      ActivePumps : Int;
+      AvailablePumps : Int;
+      MainSeqStep : Int;
+      TargetPumps : Int;
+      DutyLeadIndex : Int;
+      AutoRunning : Bool;
+      CommonFault : Bool;
+      RecoveryAckRequired : Bool;
+      VSD_Available : Array[1..4] of Bool;
+      VSD_Faulted : Array[1..4] of Bool;
+      VSD_State : Array[1..4] of Int;
+   END_STRUCT;
+BEGIN
+   FlowPV_m3h := 0.0;
+   FlowSignalValid := FALSE;
+   SpeedDemandPct := 0.0;
+   ActivePumps := 0;
+   AvailablePumps := 0;
+   MainSeqStep := 0;
+   TargetPumps := 0;
+   DutyLeadIndex := 1;
+   AutoRunning := FALSE;
+   CommonFault := FALSE;
+   RecoveryAckRequired := FALSE;
+END_DATA_BLOCK
+
+DATA_BLOCK "DB_EFF_Alarms"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+   STRUCT
+      EStopUnhealthy : Bool;
+      ControlPowerUnhealthy : Bool;
+      DryRunTrip : Bool;
+      FlowSignalInvalid : Bool;
+      NoVSDAvailable : Bool;
+      FlowSetpointNotAchieved : Bool;
+      RecoveryAckRequired : Bool;
+      VSD_Faulted : Array[1..4] of Bool;
+      VSD_NotReady : Array[1..4] of Bool;
+      VSD_NotRemote : Array[1..4] of Bool;
+   END_STRUCT;
+BEGIN
+   EStopUnhealthy := FALSE;
+   ControlPowerUnhealthy := FALSE;
+   DryRunTrip := FALSE;
+   FlowSignalInvalid := FALSE;
+   NoVSDAvailable := FALSE;
+   FlowSetpointNotAchieved := FALSE;
+   RecoveryAckRequired := FALSE;
+END_DATA_BLOCK
+
+DATA_BLOCK "DB_EFF_Diagnostics"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+   STRUCT
+      FirstScanComplete : Bool;
+      LastTripCode : Int;
+      LastTripStep : Int;
+      LastTripVSD : Int;
+      CompileNote : String[80];
+   END_STRUCT;
+BEGIN
+   FirstScanComplete := FALSE;
+   LastTripCode := 0;
+   LastTripStep := 0;
+   LastTripVSD := 0;
+   CompileNote := 'Generated for Siemens S7-1215 TIA SCL External Source';
+END_DATA_BLOCK
+
+DATA_BLOCK "DB_EFF_Retain"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+   STRUCT
+      MainSeqStep : Int;
+      TargetPumps : Int;
+      DutyLeadIndex : Int;
+      RecoveryAckRequired : Bool;
+      VSDSeqStep : Array[1..4] of Int;
+      VSDTripLatched : Array[1..4] of Bool;
+      VSDStarts : Array[1..4] of DInt;
+      VSDRuntime_h : Array[1..4] of Real;
+   END_STRUCT;
+BEGIN
+   MainSeqStep := 0;
+   TargetPumps := 0;
+   DutyLeadIndex := 1;
+   RecoveryAckRequired := FALSE;
+END_DATA_BLOCK
+
+DATA_BLOCK "DB_EFF_Recipe"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+   STRUCT
+      PresetFlow_m3h : Array[1..4] of Real;
+   END_STRUCT;
+BEGIN
+   PresetFlow_m3h[1] := 25.0;
+   PresetFlow_m3h[2] := 50.0;
+   PresetFlow_m3h[3] := 75.0;
+   PresetFlow_m3h[4] := 100.0;
+END_DATA_BLOCK

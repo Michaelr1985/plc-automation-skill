@@ -1,0 +1,6 @@
+DATA_BLOCK "DB_FB_EFF_Cascade"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+   "FB_EFF_Cascade"
+BEGIN
+END_DATA_BLOCK
