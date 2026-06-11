@@ -18,6 +18,10 @@ CODESYS V3 Structured Text version of the 5 VSD cascade control project.
 - `PRG_Main.ST`: example program calling the function block and mapping outputs.
 - `commissioning-notes.md`: CODESYS-specific validation notes.
 
+## File Import Status
+
+The `.ST` files in this folder are object-content source files for paste-in/reference use. They are not native CODESYS project import files. For CODESYS import, package the objects as PLCopen XML `.xml` through `Project > Import PLCopenXML` or as a CODESYS `.export` file created by CODESYS tooling.
+
 ## Basic Use
 
 1. Create the DUT objects from `DUT_CascadeTypes.ST`.

@@ -20,9 +20,14 @@ Reset clears latched faults only after the unsafe/fault condition is gone. Reset
 
 - `udt-definitions.md`: UDT structure to create in Studio 5000.
 - `controller-tags.csv`: suggested controller/program tag list.
-- `VSD_Cascade_Main.ST`: Logix-style Structured Text cascade routine.
+- `VSD_Cascade_Main.ST`: Logix-style Structured Text routine body for paste-in/reference use.
+- `R20_IO_Mapping.ST`: Logix-style Structured Text I/O mapping routine body for paste-in/reference use.
 - `commissioning-checklist.md`: commissioning and safety validation checklist.
 - `Allen-Bradley-5-VSD-Cascade-Commissioning-Checklist.xlsx`: Excel commissioning checklist with status tracking and signoff fields.
+
+## File Import Status
+
+The `.ST` files in this folder are not native Studio 5000 import files. They are paste-in/reference routine source. For native Logix Designer import, the package should be converted into a valid `.L5X` XML component file for the target Logix Designer major version.
 
 ## Recommended Logix Organization
 

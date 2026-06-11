@@ -45,6 +45,7 @@ Conventions:
 - Use `ONS`/edge logic for commands that must not retrigger each scan.
 - Watch retentive behavior of tags, timers, and latches across downloads/power cycles.
 - For GuardLogix, keep safety task and safety tags under safety lifecycle controls.
+- For importable generated files, use `.L5X` XML or another documented Logix import/export format. Plain `.ST` files are paste-in routine source only.
 
 Naming examples:
 
@@ -64,6 +65,7 @@ Conventions:
 - Prefer local variables inside FBs and explicit interfaces between POUs.
 - Confirm which IEC languages and safety subsets are available in the selected product/version.
 - Keep safety logic in the safety environment and standard control in the standard controller environment.
+- For importable generated files, use Machine Expert `.export` or PLCopen XML `.xml`; plain `.ST` text is not a complete import file.
 
 Naming examples:
 
@@ -82,6 +84,7 @@ Conventions:
 - Keep device I/O mapping separate from application logic.
 - Document task cycle time and watchdog assumptions.
 - Treat online changes, retained variables, and persistent variables as commissioning risks requiring checks.
+- For importable generated files, use PLCopen XML `.xml` or CODESYS `.export`; plain `.ST` text is paste-in/object content only.
 
 ## Delta ISPSoft / WPLSoft
 
@@ -94,6 +97,7 @@ Conventions:
 - Keep step words in documented retentive memory.
 - Use vendor-neutral pseudocode if software/CPU details are missing.
 - Keep raw IO mapping separate from sequence and interlock logic where practical.
+- Do not claim generated files are import-ready unless the user provides a Delta export/import format or confirms the exact supported file workflow.
 
 ## Omron Sysmac Studio
 
@@ -106,6 +110,7 @@ Conventions:
 - Use CASE-based sequence engines unless the site standard requires another method.
 - Document retained step words and restart behavior.
 - Keep safety program/interface status separate from standard control logic.
+- For importable generated files, confirm Sysmac version and use supported project/POU export formats or IEC 61131-10 XML where available.
 
 ## Vendor-Neutral Migration Watchpoints
 

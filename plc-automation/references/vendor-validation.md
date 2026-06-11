@@ -10,6 +10,7 @@ Before code generation, determine:
 - Retentive Strategy
 - Task Structure
 - Vendor Naming Standard
+- Required File Output Format
 
 Output this check:
 
@@ -23,6 +24,7 @@ Memory Strategy:
 Retentive Strategy:
 Step Engine Strategy:
 Naming Convention:
+File Output Format:
 Risks:
 Assumptions:
 ```
@@ -61,6 +63,8 @@ Rules:
 - Use AOIs only where lifecycle governance allows.
 - Document controller/program tag scope and task period.
 - Watch retentive tags, timers, latches, and first-scan behavior.
+- Use `.L5X` XML for import-ready components. Plain `.ST` files are paste-in source, not native import files.
+- Include target Logix Designer major version assumptions for generated `.L5X`.
 
 ### Delta
 
@@ -72,6 +76,7 @@ Rules:
 - Confirm exact CPU/software before syntax.
 - Use vendor-neutral design if instruction support is uncertain.
 - Document retentive registers, memory ranges, and scan behavior.
+- Do not promise import-ready files without a confirmed WPLSoft/ISPSoft import format or a user-supplied exported project/source file.
 
 ### Schneider
 
@@ -82,6 +87,7 @@ Rules:
 - Confirm product line and safety environment.
 - Use POUs, DUTs, and GVLs for modular design.
 - Keep safety logic separate from standard control.
+- Use Machine Expert `.export` or PLCopen XML `.xml` for import-ready exchange. Plain `.ST` files are paste-in source.
 
 ### Omron
 
@@ -92,6 +98,7 @@ Rules:
 - Confirm NJ/NX/other controller family.
 - Use structured variables, programs, FBs, and tasks according to Sysmac standards.
 - Document retained variables and safety CPU boundaries.
+- Use supported Sysmac project formats or IEC 61131-10 XML where available. Plain `.ST` files are not generic import-ready files.
 
 ### CODESYS
 
@@ -109,6 +116,7 @@ Rules:
 - Use `VAR PERSISTENT RETAIN` for retentive step words where supported.
 - Use CASE-based step engines.
 - Do not default to SFC.
+- Use PLCopen XML `.xml` or CODESYS `.export` for import-ready exchange. Plain `.ST` files are paste-in source/object content references.
 
 ## Industrial Network Engine
 
