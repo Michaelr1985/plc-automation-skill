@@ -20,6 +20,8 @@ Conventions:
 - Use SCL for state machines and calculations; LAD/FBD for field-maintainable discrete interlocks.
 - Use network titles/comments to make online diagnosis readable.
 - Separate safety program logic from standard control logic. Do not simulate certified safety behavior with standard code.
+- For importable generated files, follow `siemens-tia-source-standard.md`: generate full External Source or SIMATIC SD structures with wrappers, interfaces, networks, DBs, and block endings.
+- Never describe loose SCL/STL body text as import-ready for TIA Portal.
 
 Naming examples:
 

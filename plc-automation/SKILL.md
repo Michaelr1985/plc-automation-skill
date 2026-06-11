@@ -89,6 +89,7 @@ Load only what is needed:
 - Step engines, sequence tables, and power recovery: `references/step-engine-standard.md`
 - Project scoping, IO, architecture, interlocks, alarms: `references/design-engines.md`
 - Vendor validation and platform standards: `references/vendor-validation.md` and `references/vendor-conventions.md`
+- Siemens TIA Portal importable SCL/STL source structure: `references/siemens-tia-source-standard.md`
 - HMI, SCADA, and industrial networks: `references/hmi-scada-network.md`
 - Simulation, FAT, SAT, and commissioning: `references/simulation-commissioning.md`
 - Estimating and documentation: `references/estimating-documentation.md`
@@ -106,3 +107,4 @@ Load only what is needed:
 - Use one-shot/rising-edge triggers for start commands, resets, counters, and event logging.
 - Avoid duplicate output coils or multiple writers to the same actuator command.
 - If platform is unknown, generate vendor-neutral architecture, design tables, and pseudocode only. Never mix vendor syntax.
+- For Siemens importable code, generate complete TIA External Source or SIMATIC SD `.s7dcl` structures, not loose SCL/STL snippets.

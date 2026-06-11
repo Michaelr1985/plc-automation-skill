@@ -34,6 +34,25 @@ Risks: safety function boundary must be verified in safety hardware/program
 Assumptions: optimized DBs enabled unless HMI/SCADA integration requires otherwise
 ```
 
+## Example: Siemens Importable Code Response
+
+When asked for Siemens TIA Portal code, do not start with a bare code body. Include:
+
+```text
+Import target: TIA Portal External source files
+Source format: SIMATIC SD .s7dcl for SCL FB/DB/UDT
+CPU assumption: S7-1500 unless user specifies otherwise
+Generation step: Add external file, then Generate blocks from source
+```
+
+Then provide complete source files with:
+
+- pragma
+- `FUNCTION_BLOCK`, `DATA_BLOCK`, or `TYPE`
+- variable interface
+- `NETWORK` / `END_NETWORK` for `.s7dcl`
+- matching `END_FUNCTION_BLOCK`, `END_DATA_BLOCK`, or `END_TYPE`
+
 ## Example: Transition Table
 
 | Step Number | Step Name | Active Actions | Transition Condition | Next Step | Fault Condition | Recovery Action |

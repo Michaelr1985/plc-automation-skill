@@ -44,6 +44,10 @@ Rules:
 - Use global DBs for HMI, configuration, diagnostics, alarms, recipes, retained values, and external interfaces.
 - Use optimized DBs unless integration requirements demand otherwise.
 - Use SCL for algorithms/state engines and LAD/FBD where site maintenance benefits.
+- Before generating importable source, choose either External Source `.scl`/STL or SIMATIC SD `.s7dcl`.
+- Do not emit bare Siemens SCL/STL snippets as import-ready files.
+- Do not generate STL in SIMATIC SD. Siemens documents that STL is not supported in SIMATIC SD.
+- For S7-1200/S7-1200 G2, do not assume STL support; prefer SCL unless the user confirms otherwise.
 
 ### Rockwell
 
