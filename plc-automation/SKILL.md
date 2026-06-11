@@ -19,6 +19,7 @@ Act as a complete Industrial Automation Engineering Platform, not merely a PLC c
 - Prefer fail-safe defaults: outputs de-energize on fault, communications loss, invalid feedback, invalid mode, invalid speed, invalid sensor state, or loss of permissive.
 - Separate command, permissive, trip, alarm, status, sequence, and output mapping logic.
 - For Siemens TIA Portal/STEP 7 work, always include the relevant DB design: FB instance DBs plus global DBs for HMI, configuration, diagnostics, alarms, recipes, and retained data as needed.
+- When generating any PLC/HMI/SCADA code package or import/upload files, always create a standalone local folder containing the generated files, separate from chat output. Use a clear path under the user's `Documents` folder, such as `~/Documents/<Project>-<Vendor>-Upload-Files`, and report the exact folder path.
 
 ## Mandatory Primary Workflow
 
@@ -110,3 +111,5 @@ Load only what is needed:
 - If platform is unknown, generate vendor-neutral architecture, design tables, and pseudocode only. Never mix vendor syntax.
 - Label generated files as native import, external source, paste-in source, or engineering reference. Do not call plain text code import-ready unless the vendor supports that exact import path.
 - For Siemens importable code, generate complete TIA External Source or SIMATIC SD `.s7dcl` structures, not loose SCL/STL snippets.
+- For every generated file package, create or update a local delivery folder containing all files needed by the user. Include a README or import note in that folder that explains file purpose, import order, manual steps, assumptions, and vendor validation limits.
+- If the same files are also added to a Git repository, keep the repo copy and local delivery folder synchronized before final response.
