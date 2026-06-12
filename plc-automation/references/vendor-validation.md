@@ -134,6 +134,9 @@ Rules:
 - Use C structs/enums for command/status/config/alarm/runtime data.
 - Use fail-safe defaults: set all outputs off during boot, fault, watchdog, invalid IO, invalid mode, communications loss, or failed initialization.
 - Separate hardware abstraction from application logic: `io_map`, `plc_runtime`, equipment modules, comms, and `app_main`.
+- For Wi-Fi communication, select and document STA, SoftAP, APSTA, SoftAP provisioning, BLE provisioning, ESP-NOW, MQTT, HTTP/REST, WebSocket, Modbus TCP, OTA, mDNS, and/or SNTP as applicable.
+- For BLE communication, select and document NimBLE or Bluedroid, GATT server/client, advertising, provisioning, and/or BLE Mesh as applicable.
+- Keep BLE/Wi-Fi callbacks outside the PLC scan. Use queues/shared command buffers and validate all remote commands through mode, permissive, interlock, and expiry checks.
 - Confirm exact Archive hardware revision, GPIO map, analog input hardware, relay/transistor output type, comms ports, power-fail behavior, and isolation before generating final production firmware.
 - Do not claim ESP-IDF code is ready for field commissioning without hardware bench test, IO proof test, watchdog test, brownout/power-cycle test, and FAT.
 - Required file output format is an ESP-IDF project folder with `CMakeLists.txt`, `main/CMakeLists.txt`, and C/H source files. Label it **native source project**, not PLC vendor import.

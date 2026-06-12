@@ -109,6 +109,7 @@ Rules:
 - Do not generate `.ST`, `.scl`, `.L5X`, PLCopen XML, or TIA source as the primary Archive deliverable.
 - Include an ESP-IDF README with target chip assumption, ESP-IDF version assumption, build command, flash command, monitor command, IO map assumptions, and hardware validation limits.
 - Keep hardware IO mapping in a dedicated module or clearly separated section.
+- For Wi-Fi/BLE-enabled projects, include dedicated communication modules such as `archive_wifi.c/.h`, `archive_ble.c/.h`, `mqtt_client_app.c/.h`, `modbus_server.c/.h`, or `http_server_app.c/.h` instead of placing network logic inside the PLC scan.
 - Include fail-safe boot behavior and output de-energization on faults.
 - Use NVS or another explicit ESP-IDF-supported storage method for retained step words and retained counters.
 - If exact GPIO/ADC hardware is unknown, generate a clearly marked default IO map and require confirmation before field use.

@@ -15,6 +15,7 @@ It implements a PLC-style runtime on ESP-IDF:
 - Retained step word and trip state using NVS
 - Step engine pattern for automatic sequences
 - Fail-safe output handling on trips and invalid permissives
+- Communication guidance for Wi-Fi and BLE module selection
 
 ## Build
 
@@ -43,6 +44,57 @@ idf.py flash monitor
 | `main/archive_io.c` | GPIO/ADC mapping and safe output writes |
 | `main/plc_runtime.h` | PLC runtime data structures and sequence state definitions |
 | `main/plc_runtime.c` | Retained state, trip logic, step engine, scan function |
+
+## Wi-Fi Options For Archive Projects
+
+Use dedicated communication modules and tasks. Do not place network callbacks inside the PLC scan.
+
+Supported ESP-IDF patterns to select from:
+
+- Wi-Fi Station for plant/site Wi-Fi connection.
+- SoftAP for local commissioning access.
+- Station + SoftAP when plant Wi-Fi and local setup access are both required.
+- Wi-Fi provisioning by SoftAP for installer credential setup.
+- Wi-Fi provisioning by BLE for mobile app credential setup.
+- ESP-NOW for low-latency peer-to-peer ESP32 telemetry or non-safety remote IO.
+- MQTT for telemetry, alarms, and broker-based command requests.
+- HTTP/REST server for local setup/status pages.
+- HTTP/REST client for upstream reporting.
+- WebSocket for live HMI/status streaming.
+- Modbus TCP for SCADA/HMI register mapping.
+- HTTPS OTA for firmware updates.
+- mDNS for commissioning discovery.
+- SNTP/NTP for timestamped alarms and events.
+
+Guidelines:
+
+- Remote commands are requests, not direct outputs.
+- Validate remote commands through mode, permissives, interlocks, trip state, and command expiry.
+- Use queues or protected shared structs between comms tasks and PLC logic.
+- Define communication-loss behavior for every remote command source.
+- Use TLS/authentication where the deployment requires it.
+
+## BLE Options For Archive Projects
+
+Supported ESP-IDF patterns to select from:
+
+- NimBLE for BLE-only firmware with lower memory use.
+- Bluedroid when Bluetooth Classic plus BLE is required.
+- BLE GATT server for mobile/HMI status, alarms, setup, and limited commands.
+- BLE GATT client for reading BLE sensors/devices.
+- BLE advertising for identity, availability, or commissioning state.
+- BLE provisioning for Wi-Fi credentials.
+- BLE Mesh for non-safety, low-bandwidth distributed nodes.
+
+Guidelines:
+
+- Prefer NimBLE unless Classic Bluetooth is required.
+- Use explicit GATT characteristic permissions.
+- Do not execute motion/output commands directly inside BLE callbacks.
+- Queue BLE command requests into the PLC application layer.
+- Add stale-data timeouts for BLE sensor values.
+- Document pairing, bonding, authentication, and what is visible before authentication.
+- Test Wi-Fi/BLE coexistence and memory usage when both are enabled.
 
 ## Archive Hardware Validation Required
 

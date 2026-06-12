@@ -129,9 +129,13 @@ Conventions:
   - `io_map.c/.h` for raw IO mapping.
   - `plc_runtime.c/.h` for scan orchestration, retained state, and fault handling.
   - Equipment modules for motors, pumps, conveyors, valves, and process areas.
-  - `comms_*` modules for Modbus TCP/RTU, MQTT, HTTP, or site-specific protocols.
+  - `archive_wifi.c/.h` for Wi-Fi STA, SoftAP, APSTA, provisioning, HTTP, MQTT, Modbus TCP, OTA, mDNS, SNTP, or ESP-NOW setup.
+  - `archive_ble.c/.h` for BLE GATT server/client, BLE provisioning, advertising, or BLE Mesh setup.
+  - `comms_*` modules for Modbus TCP/RTU, MQTT, HTTP, WebSocket, or site-specific protocols.
 - Use fail-safe output initialization before tasks start.
 - Avoid blocking calls inside the PLC scan task.
+- Use queues or protected shared command/status buffers between comms callbacks and PLC scan logic.
+- Validate every remote command through mode, command expiry, permissives, interlocks, and trip state before it can affect outputs.
 - Do not implement safety-rated functions in standard ESP32 firmware. Safety functions need external safety hardware or certified safety architecture.
 
 Naming examples:
