@@ -1,0 +1,13 @@
+idf_component_register(
+    SRCS
+        "test_archive_plc_runtime.c"
+        "../../main/plc_runtime.c"
+        "../../main/archive_io.c"
+    INCLUDE_DIRS
+        "."
+        "../../main"
+    REQUIRES
+        unity
+        nvs_flash
+        driver
+)

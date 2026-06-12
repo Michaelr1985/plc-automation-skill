@@ -41,6 +41,20 @@ Add extra modules when needed, for example:
 - `mqtt_client_app.c/.h`
 - `hmi_register_map.c/.h`
 
+When generating a full Archive project pack or simulation-linked Archive package, include a firmware test app:
+
+```text
+<project>/
+└── test/
+    ├── CMakeLists.txt
+    ├── README.md
+    └── main/
+        ├── CMakeLists.txt
+        └── test_<project>_runtime.c
+```
+
+The test app must compile the production runtime source, not a disconnected copy of the runtime logic.
+
 ## Mandatory Runtime Pattern
 
 Use this scan order:
@@ -233,6 +247,12 @@ Generated README files must include:
   - Watchdog/fault output off test.
   - Communications loss test.
   - Brownout/power-cycle recovery test.
+- ESP-IDF Unity firmware test instructions when a `test/` app is generated:
+  - `cd test`
+  - `idf.py set-target esp32`
+  - `idf.py build`
+  - `idf.py flash monitor`
+  - Expected Unity pass/fail evidence in the serial monitor.
 
 ## Output Labels
 

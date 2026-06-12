@@ -33,6 +33,32 @@ idf.py build
 idf.py flash monitor
 ```
 
+## Firmware Tests
+
+The `test/` folder contains a dedicated ESP-IDF Unity test application that compiles the production PLC runtime into a test app.
+
+Run from `archive-esp-idf/test`:
+
+```sh
+idf.py set-target esp32
+idf.py build
+idf.py flash monitor
+```
+
+The firmware tests verify:
+
+- Boot-safe stopped state and de-energized outputs
+- Normal start, run command, and stop sequence
+- Drive fault trip latch and reset-does-not-start behavior
+- Retained running-state power recovery to stopped/tripped
+- Analog raw-to-engineering scaling
+
+When ESP-IDF is not available on the workstation, run the repository-side structure check:
+
+```sh
+node scripts/validate-archive-firmware-tests.mjs
+```
+
 ## Files
 
 | File | Purpose |
@@ -52,6 +78,7 @@ idf.py flash monitor
 | `main/test_harness.c/.h` | Bench/FAT runtime test harness scaffold |
 | `main/plc_runtime.h` | PLC runtime data structures and sequence state definitions |
 | `main/plc_runtime.c` | Retained state, trip logic, step engine, scan function |
+| `test/` | ESP-IDF Unity firmware test app for the PLC runtime |
 
 ## Wi-Fi Options For Archive Projects
 

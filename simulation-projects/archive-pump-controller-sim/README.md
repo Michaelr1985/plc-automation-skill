@@ -53,6 +53,34 @@ The HMI simulator includes:
 - Analog tank level slider using the same ADC scaling logic
 - Step engine, permissive, trip, output, and event-log diagnostics
 
+## Firmware Test Link
+
+The matching Archive ESP-IDF firmware test app is in:
+
+```text
+../../archive-esp-idf/test
+```
+
+From the repository root, validate that the firmware test package is present and wired to the production runtime:
+
+```bash
+node scripts/validate-archive-firmware-tests.mjs
+```
+
+From this simulation folder, the same check is available as:
+
+```bash
+npm run firmware:check
+```
+
+To run the actual firmware tests, use ESP-IDF from `archive-esp-idf/test`:
+
+```bash
+idf.py set-target esp32
+idf.py build
+idf.py flash monitor
+```
+
 ## Safety Notes
 
 - This is a software simulation only.

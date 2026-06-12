@@ -5,6 +5,7 @@
   "type": "module",
   "private": true,
   "scripts": {
+    "firmware:check": "node ../../scripts/validate-archive-firmware-tests.mjs",
     "hmi": "node src/serveHmi.mjs",
     "hmi:check": "node src/checkHmiAssets.mjs",
     "simulate": "node src/simulator.mjs",
