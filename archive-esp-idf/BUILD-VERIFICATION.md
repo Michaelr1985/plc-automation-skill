@@ -38,4 +38,4 @@ Both builds completed with ESP-IDF `idf.py build`.
 - The build scripts source `~/esp/esp-idf/export.sh` automatically.
 - The build scripts put Homebrew Python 3.12 first in `PATH` before sourcing ESP-IDF to avoid macOS system Python 3.8 environment mismatch.
 - Build output folders and generated `sdkconfig` files are ignored because this repository is a reusable template package.
-- Current warnings are limited to legacy ADC driver deprecation and one unused MQTT event variable. These are not build failures, but should be cleaned up in a future firmware modernization pass.
+- The Archive IO layer uses the ESP-IDF `adc_oneshot` driver for ADC1 channel 6.

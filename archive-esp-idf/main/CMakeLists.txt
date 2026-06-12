@@ -12,4 +12,17 @@ idf_component_register(
         "plc_runtime.c"
     INCLUDE_DIRS
         "."
+    REQUIRES
+        app_update
+        driver
+        esp_adc
+        esp_event
+        esp_http_client
+        esp_http_server
+        esp_https_ota
+        esp_netif
+        esp_system
+        esp_wifi
+        mqtt
+        nvs_flash
 )

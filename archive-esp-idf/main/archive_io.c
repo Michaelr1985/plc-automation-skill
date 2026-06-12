@@ -1,7 +1,8 @@
 #include "archive_io.h"
 
-#include "driver/adc.h"
 #include "driver/gpio.h"
+#include "esp_adc/adc_oneshot.h"
+#include "esp_err.h"
 
 #define ARCHIVE_GPIO_ESTOP_OK      GPIO_NUM_18
 #define ARCHIVE_GPIO_START_PB      GPIO_NUM_19
@@ -15,7 +16,10 @@
 #define ARCHIVE_GPIO_ALARM_LIGHT   GPIO_NUM_32
 #define ARCHIVE_GPIO_RUN_LIGHT     GPIO_NUM_33
 
-#define ARCHIVE_ADC_CHANNEL        ADC1_CHANNEL_6
+#define ARCHIVE_ADC_UNIT           ADC_UNIT_1
+#define ARCHIVE_ADC_CHANNEL        ADC_CHANNEL_6
+
+static adc_oneshot_unit_handle_t adc_handle;
 
 static bool read_input(gpio_num_t gpio)
 {
@@ -53,8 +57,21 @@ void archive_io_init_safe(void)
     gpio_config(&input_config);
     gpio_config(&output_config);
 
-    adc1_config_width(ADC_WIDTH_BIT_12);
-    adc1_config_channel_atten(ARCHIVE_ADC_CHANNEL, ADC_ATTEN_DB_11);
+    if (adc_handle == NULL) {
+        adc_oneshot_unit_init_cfg_t adc_unit_config = {
+            .unit_id = ARCHIVE_ADC_UNIT,
+            .ulp_mode = ADC_ULP_MODE_DISABLE,
+        };
+
+        ESP_ERROR_CHECK(adc_oneshot_new_unit(&adc_unit_config, &adc_handle));
+
+        adc_oneshot_chan_cfg_t adc_channel_config = {
+            .bitwidth = ADC_BITWIDTH_12,
+            .atten = ADC_ATTEN_DB_12,
+        };
+
+        ESP_ERROR_CHECK(adc_oneshot_config_channel(adc_handle, ARCHIVE_ADC_CHANNEL, &adc_channel_config));
+    }
 
     archive_io_write_safe();
 }
@@ -72,7 +89,13 @@ void archive_io_read(archive_inputs_t *inputs)
     inputs->drive_ready = read_input(ARCHIVE_GPIO_DRIVE_READY);
     inputs->drive_running = read_input(ARCHIVE_GPIO_DRIVE_RUN_FB);
     inputs->drive_fault = read_input(ARCHIVE_GPIO_DRIVE_FAULT);
-    inputs->adc_raw = adc1_get_raw(ARCHIVE_ADC_CHANNEL);
+    inputs->adc_raw = 0;
+    if (adc_handle != NULL) {
+        int raw = 0;
+        if (adc_oneshot_read(adc_handle, ARCHIVE_ADC_CHANNEL, &raw) == ESP_OK) {
+            inputs->adc_raw = raw;
+        }
+    }
 }
 
 void archive_io_write(const archive_outputs_t *outputs)

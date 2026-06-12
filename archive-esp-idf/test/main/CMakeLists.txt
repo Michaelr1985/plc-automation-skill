@@ -10,4 +10,5 @@ idf_component_register(
         unity
         nvs_flash
         driver
+        esp_adc
 )
