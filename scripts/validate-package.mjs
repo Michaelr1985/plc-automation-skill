@@ -34,7 +34,10 @@ function fail(errors, message) {
 async function validateArchive(folder, errors) {
   const required = [
     "CMakeLists.txt",
+    "BUILD-VERIFICATION.md",
     "README.md",
+    "build-main.sh",
+    "build-tests.sh",
     "main/CMakeLists.txt",
     "main/app_main.c",
     "main/archive_config.h",

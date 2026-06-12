@@ -33,9 +33,29 @@ idf.py build
 idf.py flash monitor
 ```
 
+Convenience build script from this folder:
+
+```sh
+./build-main.sh
+```
+
+The script expects ESP-IDF at `~/esp/esp-idf` by default. To use another checkout:
+
+```sh
+IDF_ROOT=/path/to/esp-idf ./build-main.sh
+```
+
+This build was verified with ESP-IDF 5.4 on 2026-06-12. See `BUILD-VERIFICATION.md`.
+
 ## Firmware Tests
 
 The `test/` folder contains a dedicated ESP-IDF Unity test application that compiles the production PLC runtime into a test app.
+
+Build the firmware test app from this folder:
+
+```sh
+./build-tests.sh
+```
 
 Run from `archive-esp-idf/test`:
 

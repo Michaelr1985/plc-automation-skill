@@ -2,3 +2,9 @@ AGENTS.md
 .DS_Store
 .spreadsheet-build/
 ~$*.xlsx
+archive-esp-idf/build/
+archive-esp-idf/test/build/
+archive-esp-idf/sdkconfig
+archive-esp-idf/sdkconfig.old
+archive-esp-idf/test/sdkconfig
+archive-esp-idf/test/sdkconfig.old
