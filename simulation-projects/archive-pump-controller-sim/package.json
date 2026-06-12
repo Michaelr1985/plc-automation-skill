@@ -1,0 +1,14 @@
+{
+  "name": "archive-pump-controller-sim",
+  "version": "1.0.0",
+  "description": "Archive ESP32 pump controller PLC scan simulation and evidence generator.",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "simulate": "node src/simulator.mjs",
+    "test": "node src/simulator.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

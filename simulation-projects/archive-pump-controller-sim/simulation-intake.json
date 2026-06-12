@@ -1,0 +1,34 @@
+{
+  "project": {
+    "name": "Archive Pump Controller Simulation",
+    "client": "Internal",
+    "site": "Bench Simulation",
+    "revision": "A"
+  },
+  "platform": {
+    "vendor": "Archive",
+    "controller": "ESP32 PLC",
+    "runtime": "ESP-IDF C runtime mirrored in Node.js"
+  },
+  "equipment": [
+    {
+      "tag": "PMP_001",
+      "type": "VSD driven pump",
+      "sequence": "Retained step engine"
+    }
+  ],
+  "communication": {
+    "remoteCommandSources": [
+      "BLE",
+      "Wi-Fi HTTP",
+      "Wi-Fi MQTT",
+      "Modbus TCP"
+    ],
+    "remoteCommandExpiryMs": 1000
+  },
+  "safety": {
+    "failSafeOutputs": true,
+    "resetDoesNotStart": true,
+    "safetyCertificationClaimed": false
+  }
+}

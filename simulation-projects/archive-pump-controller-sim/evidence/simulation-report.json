@@ -1,0 +1,77 @@
+{
+  "project": "Archive Pump Controller Simulation",
+  "generatedAt": "2026-06-12T09:42:16.370Z",
+  "startedAt": "2026-06-12T09:42:16.370Z",
+  "finishedAt": "2026-06-12T09:42:16.371Z",
+  "summary": {
+    "total": 8,
+    "passed": 8,
+    "failed": 0
+  },
+  "results": [
+    {
+      "id": "SIM-001",
+      "name": "Boot state has safe outputs",
+      "status": "PASS",
+      "evidence": [
+        "Runtime initialized stopped with all outputs de-energized."
+      ]
+    },
+    {
+      "id": "SIM-002",
+      "name": "Normal start, run, and stop sequence",
+      "status": "PASS",
+      "evidence": [
+        "Start pulse moved sequence to PRECHECK/STARTING/RUNNING; stop pulse forced STOPPING then STOPPED."
+      ]
+    },
+    {
+      "id": "SIM-003",
+      "name": "E-stop trip de-energizes outputs",
+      "status": "PASS",
+      "evidence": [
+        "Loss of estop_ok latched trip, entered FAULTED, and dropped drive command."
+      ]
+    },
+    {
+      "id": "SIM-004",
+      "name": "Drive fault latches trip and de-energizes outputs",
+      "status": "PASS",
+      "evidence": [
+        "Drive fault latched trip and removed run command."
+      ]
+    },
+    {
+      "id": "SIM-005",
+      "name": "Reset clears only after fault cause clears and does not restart",
+      "status": "PASS",
+      "evidence": [
+        "Reset during active fault was ignored; reset after cause cleared returned to STOPPED without starting."
+      ]
+    },
+    {
+      "id": "SIM-006",
+      "name": "Power recovery from retained running state forces safe stopped/tripped state",
+      "status": "PASS",
+      "evidence": [
+        "Retained RUNNING state on boot was converted to STOPPED with tripLatched=true and no auto restart."
+      ]
+    },
+    {
+      "id": "SIM-007",
+      "name": "Stale remote BLE/Wi-Fi command is ignored",
+      "status": "PASS",
+      "evidence": [
+        "Expired and unhealthy remote start commands did not create a start pulse."
+      ]
+    },
+    {
+      "id": "SIM-008",
+      "name": "Analog scaling clamps and scales low/mid/high values",
+      "status": "PASS",
+      "evidence": [
+        "Raw ADC values clamp at limits and scale midpoint to approximately 50%."
+      ]
+    }
+  ]
+}
