@@ -1,6 +1,6 @@
 # Archive Pump Controller Simulation
 
-Generator mode: **Test Harness Pack**
+Generator mode: **HMI/SCADA Pack + Test Harness Pack**
 
 This project simulates the Archive ESP32 pump controller PLC scan in Node.js. It mirrors the retained step engine used by `archive-esp-idf/main/plc_runtime.c` so software behavior can be tested before loading firmware onto hardware.
 
@@ -12,8 +12,9 @@ This project simulates the Archive ESP32 pump controller PLC scan in Node.js. It
 - Analog input scaling from raw 12-bit ADC to engineering units
 - Remote command validation for BLE/Wi-Fi style command sources
 - Simulation evidence for FAT/SAT records
+- Browser-based HMI simulator for operator workflow checks
 
-## Run
+## Run Automated Simulation
 
 ```bash
 npm test
@@ -31,6 +32,26 @@ The simulator writes:
 - `evidence/simulation-report.md`
 
 The process exits with code `1` if any scenario fails.
+
+## Run HMI Simulator
+
+```bash
+npm run hmi
+```
+
+Then open:
+
+```text
+http://localhost:4173
+```
+
+The HMI simulator includes:
+
+- Start, stop, and reset commands
+- E-stop healthy, drive ready, drive running feedback, and drive fault toggles
+- BLE/Wi-Fi style remote command simulation with command age and comms health
+- Analog tank level slider using the same ADC scaling logic
+- Step engine, permissive, trip, output, and event-log diagnostics
 
 ## Safety Notes
 

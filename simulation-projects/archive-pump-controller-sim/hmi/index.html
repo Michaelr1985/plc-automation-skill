@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Archive Pump HMI Simulator</title>
+    <link rel="stylesheet" href="/hmi/styles.css">
+  </head>
+  <body>
+    <main class="shell">
+      <header class="topbar">
+        <div>
+          <h1>Archive Pump HMI Simulator</h1>
+          <p>Single VSD pump step-engine simulation</p>
+        </div>
+        <div class="runtime">
+          <span id="connectionState" class="badge good">SIM ONLINE</span>
+          <span id="scanState" class="badge">SCAN 50 ms</span>
+        </div>
+      </header>
+
+      <section id="alarmBanner" class="alarm-banner" aria-live="polite">No active alarm</section>
+
+      <section class="workspace">
+        <section class="mimic" aria-label="Pump mimic">
+          <div class="bus">
+            <span>Archive ESP32 PLC</span>
+            <span>BLE / Wi-Fi / Modbus TCP command boundary</span>
+          </div>
+
+          <div class="process-line">
+            <div class="tank">
+              <span class="level" id="tankLevel"></span>
+              <strong>Feed Tank</strong>
+              <small id="pvText">PV 0.0 %</small>
+            </div>
+            <div class="pipe"></div>
+            <div id="pumpSymbol" class="pump">
+              <span></span>
+              <strong>PMP_001</strong>
+            </div>
+            <div class="pipe"></div>
+            <div id="vsdSymbol" class="drive">
+              <strong>VSD_001</strong>
+              <small id="driveText">STOPPED</small>
+            </div>
+          </div>
+
+          <div class="io-grid">
+            <div class="io-card">
+              <h2>Inputs</h2>
+              <dl>
+                <dt>E-stop healthy</dt><dd id="ioEstop">TRUE</dd>
+                <dt>Drive ready</dt><dd id="ioReady">TRUE</dd>
+                <dt>Drive running feedback</dt><dd id="ioRunning">FALSE</dd>
+                <dt>Drive fault</dt><dd id="ioFault">FALSE</dd>
+              </dl>
+            </div>
+            <div class="io-card">
+              <h2>Outputs</h2>
+              <dl>
+                <dt>Drive run command</dt><dd id="outRun">FALSE</dd>
+                <dt>Run light</dt><dd id="outRunLight">FALSE</dd>
+                <dt>Alarm light</dt><dd id="outAlarm">FALSE</dd>
+                <dt>Starts counter</dt><dd id="startsCounter">0</dd>
+              </dl>
+            </div>
+          </div>
+        </section>
+
+        <aside class="panel" aria-label="Operator controls">
+          <section>
+            <h2>Operator</h2>
+            <div class="button-row">
+              <button id="startBtn" class="command start" type="button">Start</button>
+              <button id="stopBtn" class="command stop" type="button">Stop</button>
+              <button id="resetBtn" class="command reset" type="button">Reset</button>
+            </div>
+          </section>
+
+          <section>
+            <h2>Field Signals</h2>
+            <label class="toggle"><input id="estopToggle" type="checkbox" checked> E-stop healthy</label>
+            <label class="toggle"><input id="readyToggle" type="checkbox" checked> Drive ready</label>
+            <label class="toggle"><input id="runningToggle" type="checkbox"> Drive running feedback</label>
+            <label class="toggle"><input id="faultToggle" type="checkbox"> Drive fault</label>
+          </section>
+
+          <section>
+            <h2>Remote Command</h2>
+            <select id="remoteCommand">
+              <option value="">None</option>
+              <option value="start">Start</option>
+              <option value="stop">Stop</option>
+            </select>
+            <label class="toggle"><input id="commsToggle" type="checkbox" checked> Comms healthy</label>
+            <label>
+              Command age ms
+              <input id="commandAge" type="number" min="0" max="10000" step="100" value="0">
+            </label>
+          </section>
+
+          <section>
+            <h2>Analog Input</h2>
+            <input id="adcRaw" type="range" min="0" max="4095" value="0">
+            <div class="range-readout">
+              <span id="adcRawText">0 raw</span>
+              <span id="adcEngText">0.0 %</span>
+            </div>
+          </section>
+        </aside>
+      </section>
+
+      <section class="diagnostics">
+        <div>
+          <h2>Step Engine</h2>
+          <table>
+            <tbody>
+              <tr><th>MainSeqStep</th><td id="stepText">STOPPED (0)</td></tr>
+              <tr><th>Permissive OK</th><td id="permissiveText">FALSE</td></tr>
+              <tr><th>Active Trip</th><td id="activeTripText">FALSE</td></tr>
+              <tr><th>Trip Latched</th><td id="tripLatchedText">FALSE</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div>
+          <h2>Event Log</h2>
+          <ol id="eventLog"></ol>
+        </div>
+      </section>
+    </main>
+
+    <script type="module" src="/hmi/hmiApp.mjs"></script>
+  </body>
+</html>

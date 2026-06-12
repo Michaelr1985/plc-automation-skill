@@ -5,8 +5,10 @@
   "type": "module",
   "private": true,
   "scripts": {
+    "hmi": "node src/serveHmi.mjs",
+    "hmi:check": "node src/checkHmiAssets.mjs",
     "simulate": "node src/simulator.mjs",
-    "test": "node src/simulator.mjs"
+    "test": "node src/simulator.mjs && node src/checkHmiAssets.mjs"
   },
   "engines": {
     "node": ">=18"
