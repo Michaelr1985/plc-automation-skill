@@ -6,6 +6,7 @@ import { scenarios } from "./scenarios.mjs";
 
 const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const evidenceDir = path.join(projectRoot, "evidence");
+const writeEvidence = !process.argv.includes("--no-write");
 
 async function run() {
   const startedAt = new Date();
@@ -39,16 +40,22 @@ async function run() {
     results
   };
 
-  await fs.mkdir(evidenceDir, { recursive: true });
-  await fs.writeFile(
-    path.join(evidenceDir, "simulation-report.json"),
-    `${JSON.stringify(report, null, 2)}\n`,
-    "utf8"
-  );
-  await fs.writeFile(path.join(evidenceDir, "simulation-report.md"), renderMarkdown(report), "utf8");
+  if (writeEvidence) {
+    await fs.mkdir(evidenceDir, { recursive: true });
+    await fs.writeFile(
+      path.join(evidenceDir, "simulation-report.json"),
+      `${JSON.stringify(report, null, 2)}\n`,
+      "utf8"
+    );
+    await fs.writeFile(path.join(evidenceDir, "simulation-report.md"), renderMarkdown(report), "utf8");
+  }
 
   console.log(`Archive pump simulation: ${passed}/${results.length} passed`);
-  console.log(`Evidence: ${path.relative(process.cwd(), path.join(evidenceDir, "simulation-report.md"))}`);
+  if (writeEvidence) {
+    console.log(`Evidence: ${path.relative(process.cwd(), path.join(evidenceDir, "simulation-report.md"))}`);
+  } else {
+    console.log("Evidence write skipped: --no-write");
+  }
 
   if (failed > 0) {
     process.exitCode = 1;
