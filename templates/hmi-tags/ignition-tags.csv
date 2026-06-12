@@ -1,0 +1,8 @@
+Tag,DataType,Direction,Purpose,Historian,Alarm,Security,Notes
+System/Healthy,Boolean,PLC->Ignition,System healthy summary,true,false,View,
+Command/AutoMode,Boolean,Ignition->PLC,Automatic mode request,true,false,Operator,Command request only
+Command/StartPB,Boolean,Ignition->PLC,Start request,true,false,Operator,Use edge detection in PLC
+Command/StopPB,Boolean,Ignition->PLC,Stop request,true,false,Operator,
+Command/ResetPB,Boolean,Ignition->PLC,Reset request,true,false,Operator,Reset must not start equipment
+Status/MainSeqStep,Int4,PLC->Ignition,Retained sequence step,true,false,View,
+Alarms/ActiveCount,Int4,PLC->Ignition,Alarm count,true,true,View,

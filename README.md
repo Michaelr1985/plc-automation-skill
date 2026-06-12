@@ -25,6 +25,12 @@ A custom Codex skill for complete industrial automation engineering work from pr
 - Industrial communication templates
 - Safety boundary rules
 - Generated file validation rules
+- Real package generator scripts
+- Structural validation scripts
+- Standard automation project intake schema
+- HMI/SCADA tag export templates
+- Versioned site standard templates
+- Example projects for major platforms
 - Mine automation safety and sequencing guidance
 - Safety interlock review principles
 - Motor starter and conveyor control templates
@@ -53,3 +59,12 @@ The skill has already been installed locally on this machine.
 - `archive-esp-idf/`: Archive ESP32 PLC / ESP-IDF starter project showing the required firmware structure.
 - `rockwell-studio5000/`: Allen-Bradley / Rockwell Studio 5000 package for a 5 VSD cascade control panel.
 - `codesys-st/`: CODESYS Structured Text package for the same 5 VSD cascade control panel.
+
+## Execution Tooling
+
+- `scripts/`: package generators, HMI tag pack generator, and package validators.
+- `schemas/`: standard automation project intake schema and example Archive intake.
+- `templates/hmi-tags/`: WinCC, FactoryTalk, Ignition, and Archive web/BLE tag templates.
+- `templates/site-standards/`: site/client standard templates.
+- `examples/`: end-to-end example project briefs for Siemens, Rockwell, CODESYS, Schneider, and Archive.
+- `.spreadsheet-build/build_fat_sat_workbook.mjs`: FAT/SAT/commissioning workbook builder.

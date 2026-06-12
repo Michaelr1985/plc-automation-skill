@@ -1,0 +1,41 @@
+site_standard:
+  name: Default Industrial Automation Standard
+  revision: A
+  naming:
+    tag_pattern: "<AREA>_<EQUIPMENT>_<SIGNAL>"
+    boolean_healthy_suffix: "Healthy"
+    trip_suffix: "Trip"
+    command_prefix: "Cmd"
+    status_prefix: "Sts"
+  alarms:
+    numbering:
+      safety_common: "1000-1999"
+      equipment: "2000-2999"
+      process_instruments: "3000-3999"
+      communications: "4000-4999"
+      sequences: "5000-5999"
+      hmi_scada: "6000-6999"
+      archive_firmware: "7000-7999"
+    reset_rule: "Reset clears eligible trips only and must not start equipment."
+  hmi:
+    colors:
+      running: "Green"
+      stopped: "Grey"
+      fault: "Red"
+      warning: "Amber"
+      manual: "Blue"
+    required_screens:
+      - Overview
+      - Equipment Faceplate
+      - Alarms
+      - Trends
+      - IO Diagnostics
+      - Commissioning
+  network:
+    ip_plan_required: true
+    default_ot_vlan: "TBC"
+    stale_data_timeout_ms: 5000
+  safety:
+    safety_boundary_statement_required: true
+    reset_does_not_start_required: true
+    safety_functions_external_or_certified: true

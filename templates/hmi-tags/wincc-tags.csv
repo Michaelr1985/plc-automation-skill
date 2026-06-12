@@ -1,0 +1,8 @@
+Tag,DataType,Direction,Purpose,Historian,Alarm,Security,Notes
+System_Healthy,Bool,PLC->HMI,System healthy summary,Yes,No,View,
+AutoMode,Bool,HMI->PLC,Automatic mode request,Yes,No,Operator,Command request only
+StartPB,Bool,HMI->PLC,Start request,Yes,No,Operator,Use edge detection in PLC
+StopPB,Bool,HMI->PLC,Stop request,Yes,No,Operator,
+ResetPB,Bool,HMI->PLC,Reset request,Yes,No,Operator,Reset must not start equipment
+MainSeqStep,Int,PLC->HMI,Retained sequence step,Yes,No,View,
+ActiveAlarmCount,Int,PLC->HMI,Alarm count,Yes,Yes,View,

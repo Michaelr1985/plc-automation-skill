@@ -2,6 +2,13 @@ idf_component_register(
     SRCS
         "app_main.c"
         "archive_io.c"
+        "archive_wifi.c"
+        "archive_ble.c"
+        "mqtt_client_app.c"
+        "http_server_app.c"
+        "modbus_tcp_server.c"
+        "ota_update.c"
+        "test_harness.c"
         "plc_runtime.c"
     INCLUDE_DIRS
         "."

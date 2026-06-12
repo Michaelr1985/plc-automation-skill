@@ -1,0 +1,132 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.local/plc-automation/automation-project-intake.schema.json",
+  "title": "PLC Automation Project Intake",
+  "type": "object",
+  "required": ["project", "platform", "equipment", "deliverables"],
+  "properties": {
+    "project": {
+      "type": "object",
+      "required": ["name"],
+      "properties": {
+        "name": { "type": "string" },
+        "customer": { "type": "string" },
+        "site": { "type": "string" },
+        "area": { "type": "string" },
+        "industry": { "type": "string" },
+        "quoteType": { "type": "string" },
+        "revision": { "type": "string" }
+      }
+    },
+    "platform": {
+      "type": "object",
+      "required": ["vendor"],
+      "properties": {
+        "vendor": {
+          "type": "string",
+          "enum": ["Siemens", "Rockwell", "CODESYS", "Schneider", "Omron", "Delta", "Archive", "VendorNeutral"]
+        },
+        "controller": { "type": "string" },
+        "software": { "type": "string" },
+        "language": { "type": "string" },
+        "importFormat": { "type": "string" }
+      }
+    },
+    "power": {
+      "type": "object",
+      "properties": {
+        "supplyVoltage": { "type": "string" },
+        "controlVoltage": { "type": "string" },
+        "panelType": { "type": "string" },
+        "ipRating": { "type": "string" }
+      }
+    },
+    "equipment": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["tag", "type"],
+        "properties": {
+          "tag": { "type": "string" },
+          "type": { "type": "string" },
+          "description": { "type": "string" },
+          "powerKw": { "type": "number" },
+          "starterType": { "type": "string" },
+          "vendor": { "type": "string" }
+        }
+      }
+    },
+    "io": {
+      "type": "object",
+      "properties": {
+        "digitalInputs": { "type": "array", "items": { "$ref": "#/$defs/ioPoint" } },
+        "digitalOutputs": { "type": "array", "items": { "$ref": "#/$defs/ioPoint" } },
+        "analogInputs": { "type": "array", "items": { "$ref": "#/$defs/ioPoint" } },
+        "analogOutputs": { "type": "array", "items": { "$ref": "#/$defs/ioPoint" } }
+      }
+    },
+    "communications": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "protocol": { "type": "string" },
+          "device": { "type": "string" },
+          "role": { "type": "string" },
+          "address": { "type": "string" },
+          "data": { "type": "string" },
+          "timeoutMs": { "type": "integer" }
+        }
+      }
+    },
+    "hmiScada": {
+      "type": "object",
+      "properties": {
+        "hmiRequired": { "type": "boolean" },
+        "scadaRequired": { "type": "boolean" },
+        "hmiPlatform": { "type": "string" },
+        "scadaPlatform": { "type": "string" }
+      }
+    },
+    "safety": {
+      "type": "object",
+      "properties": {
+        "estopRequired": { "type": "boolean" },
+        "guardsRequired": { "type": "boolean" },
+        "safetyHardware": { "type": "string" },
+        "notes": { "type": "string" }
+      }
+    },
+    "commissioning": {
+      "type": "object",
+      "properties": {
+        "fatRequired": { "type": "boolean" },
+        "satRequired": { "type": "boolean" },
+        "commissioningRequired": { "type": "boolean" },
+        "shutdownRequired": { "type": "boolean" },
+        "clientWitness": { "type": "boolean" }
+      }
+    },
+    "deliverables": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["Design", "CodePackage", "HMI", "SCADA", "FAT", "SAT", "CommissioningChecklist", "Estimate", "TestHarness", "Documentation"]
+      }
+    }
+  },
+  "$defs": {
+    "ioPoint": {
+      "type": "object",
+      "required": ["tag", "description"],
+      "properties": {
+        "tag": { "type": "string" },
+        "description": { "type": "string" },
+        "signal": { "type": "string" },
+        "units": { "type": "string" },
+        "range": { "type": "string" },
+        "failState": { "type": "string" }
+      }
+    }
+  }
+}

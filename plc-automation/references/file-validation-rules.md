@@ -70,6 +70,7 @@ Check:
 - Project has `main/app_main.c`.
 - Project has hardware IO module such as `archive_io.c/.h`.
 - Project has PLC runtime module such as `plc_runtime.c/.h`.
+- Project includes Archive communication modules where expected: Wi-Fi, BLE, MQTT, HTTP, Modbus TCP, OTA, and test harness scaffolds.
 - README includes ESP-IDF target/build/flash commands.
 - GPIO/ADC assumptions are stated.
 - Outputs are initialized safe.

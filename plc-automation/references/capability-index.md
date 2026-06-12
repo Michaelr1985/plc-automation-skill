@@ -38,6 +38,7 @@ This skill supports these capability groups.
 - Engineering design.
 - Import/source code package.
 - Native source firmware project.
+- Generated package folder from script.
 - HMI/SCADA screen pack.
 - Alarm list.
 - Interlock matrix.
@@ -50,6 +51,9 @@ This skill supports these capability groups.
 - Migration pack.
 - Review report.
 - Quote/estimate pack.
+- Structured JSON project intake.
+- HMI/SCADA tag export CSV.
+- Site standard profile.
 
 ## Validation Standards
 
@@ -58,6 +62,8 @@ This skill supports these capability groups.
 - Rockwell `.L5X` checks.
 - CODESYS/Schneider XML/export checks.
 - Archive ESP-IDF structure checks.
+- Local package validator scripts.
+- Local folder sync validator scripts.
 - Local delivery folder synchronization.
 - Safety boundary audit.
 - Reset-does-not-start test.
@@ -75,3 +81,15 @@ This skill supports these capability groups.
 - BLE NimBLE/Bluedroid/GATT/provisioning/Mesh.
 - MQTT/HTTP/WebSocket/Modbus TCP/OTA/mDNS/SNTP guidance.
 - ESP-NOW peer-to-peer non-safety IO guidance.
+
+## Repository Tooling
+
+- `scripts/generate-package.mjs`
+- `scripts/generate-hmi-tag-pack.mjs`
+- `scripts/validate-package.mjs`
+- `scripts/validate-local-sync.mjs`
+- `.spreadsheet-build/build_fat_sat_workbook.mjs`
+- `schemas/automation-project-intake.schema.json`
+- `templates/hmi-tags/*`
+- `templates/site-standards/*`
+- `examples/*`

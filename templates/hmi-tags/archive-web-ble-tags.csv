@@ -1,0 +1,8 @@
+Name,Interface,Type,Direction,Security,Purpose,Notes
+system_healthy,REST/BLE,Bool,Archive->Client,Read,System healthy summary,
+auto_mode,REST/BLE,Bool,Client->Archive,Operator,Automatic mode request,Command request only
+start_request,REST/BLE,Bool,Client->Archive,Operator,Start request,Requires expiry
+stop_request,REST/BLE,Bool,Client->Archive,Operator,Stop request,
+reset_request,REST/BLE,Bool,Client->Archive,Operator,Reset request,Reset must not start equipment
+main_seq_step,REST/BLE,Int,Archive->Client,Read,Retained sequence step,
+active_alarm_count,REST/BLE,Int,Archive->Client,Read,Alarm count,

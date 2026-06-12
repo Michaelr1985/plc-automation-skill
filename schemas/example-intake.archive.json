@@ -1,0 +1,69 @@
+{
+  "project": {
+    "name": "Archive Pump Controller",
+    "customer": "Demo Customer",
+    "site": "Demo Site",
+    "area": "Pump Station",
+    "industry": "Water",
+    "revision": "A"
+  },
+  "platform": {
+    "vendor": "Archive",
+    "controller": "Archive ESP32 PLC",
+    "software": "ESP-IDF",
+    "language": "C",
+    "importFormat": "Native ESP-IDF source project"
+  },
+  "power": {
+    "supplyVoltage": "24 VDC",
+    "controlVoltage": "24 VDC",
+    "panelType": "Local control panel",
+    "ipRating": "IP55"
+  },
+  "equipment": [
+    {
+      "tag": "PMP01",
+      "type": "Pump",
+      "description": "Transfer pump",
+      "powerKw": 1.5,
+      "starterType": "Relay output",
+      "vendor": "Archive"
+    }
+  ],
+  "io": {
+    "digitalInputs": [
+      { "tag": "DI_EStopHealthy", "description": "Safety relay healthy monitor", "signal": "24 VDC", "failState": "False" },
+      { "tag": "DI_StartPB", "description": "Start pushbutton", "signal": "24 VDC", "failState": "False" },
+      { "tag": "DI_StopPB", "description": "Stop pushbutton", "signal": "24 VDC", "failState": "True" }
+    ],
+    "digitalOutputs": [
+      { "tag": "DO_PumpRun", "description": "Pump run command", "signal": "Relay", "failState": "Off" }
+    ],
+    "analogInputs": [
+      { "tag": "AI_Level", "description": "Tank level", "signal": "ADC", "units": "%", "range": "0-100", "failState": "Invalid" }
+    ]
+  },
+  "communications": [
+    { "protocol": "Wi-Fi MQTT", "device": "MQTT Broker", "role": "Client", "address": "TBC", "data": "Telemetry, alarms, command requests", "timeoutMs": 30000 },
+    { "protocol": "BLE GATT", "device": "Mobile app", "role": "Peripheral", "address": "N/A", "data": "Commissioning status and setup", "timeoutMs": 10000 }
+  ],
+  "hmiScada": {
+    "hmiRequired": true,
+    "scadaRequired": false,
+    "hmiPlatform": "Archive Web/BLE HMI"
+  },
+  "safety": {
+    "estopRequired": true,
+    "guardsRequired": false,
+    "safetyHardware": "External safety relay",
+    "notes": "Archive monitors safety healthy feedback only."
+  },
+  "commissioning": {
+    "fatRequired": true,
+    "satRequired": true,
+    "commissioningRequired": true,
+    "shutdownRequired": false,
+    "clientWitness": true
+  },
+  "deliverables": ["Design", "CodePackage", "HMI", "FAT", "SAT", "CommissioningChecklist", "TestHarness", "Documentation"]
+}

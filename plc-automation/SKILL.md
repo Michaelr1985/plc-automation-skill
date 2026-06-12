@@ -126,3 +126,8 @@ Load only what is needed:
 - For every generated file package, create or update a local delivery folder containing all files needed by the user. Include a README or import note in that folder that explains file purpose, import order, manual steps, assumptions, and vendor validation limits.
 - If the same files are also added to a Git repository, keep the repo copy and local delivery folder synchronized before final response.
 - When generating FAT/SAT/commissioning documents, produce Excel-ready workbook structure with sheets for IO checks, loop checks, alarms, interlocks, sequences, communications, power recovery, test harness results, issues/punch list, and sign-off.
+- When a structured project intake is needed, use `schemas/automation-project-intake.schema.json` as the standard project intake shape.
+- When generating repeatable packages, prefer repo scripts in `scripts/` and workbook builders in `.spreadsheet-build/` where they fit the requested deliverable.
+- When generating HMI/SCADA tag exports, use templates in `templates/hmi-tags/` as starting points and adapt tag paths to the selected platform.
+- When the user provides or asks for a client/site standard, use `templates/site-standards/` as the baseline format.
+- Use `examples/` as behavior references for complete Siemens, Rockwell, CODESYS, Schneider, and Archive project packs.

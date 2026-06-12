@@ -1,0 +1,8 @@
+Tag,DataType,Direction,Purpose,Historian,Alarm,Security,Notes
+System_Healthy,BOOL,Controller->HMI,System healthy summary,Yes,No,View,
+AutoMode,BOOL,HMI->Controller,Automatic mode request,Yes,No,Operator,Command request only
+StartPB,BOOL,HMI->Controller,Start request,Yes,No,Operator,Use ONS/edge logic
+StopPB,BOOL,HMI->Controller,Stop request,Yes,No,Operator,
+ResetPB,BOOL,HMI->Controller,Reset request,Yes,No,Operator,Reset must not start equipment
+MainSeqStep,DINT,Controller->HMI,Retained sequence step,Yes,No,View,
+ActiveAlarmCount,DINT,Controller->HMI,Alarm count,Yes,Yes,View,

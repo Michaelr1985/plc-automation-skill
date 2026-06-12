@@ -40,8 +40,16 @@ idf.py flash monitor
 | `CMakeLists.txt` | ESP-IDF project definition |
 | `main/CMakeLists.txt` | Main component registration |
 | `main/app_main.c` | Startup, NVS init, IO safe state, PLC task creation |
+| `main/archive_config.h` | Feature flags, command timeouts, topic names |
 | `main/archive_io.h` | Archive IO data structures and function declarations |
 | `main/archive_io.c` | GPIO/ADC mapping and safe output writes |
+| `main/archive_wifi.c/.h` | Wi-Fi STA/SoftAP/APSTA scaffold |
+| `main/archive_ble.c/.h` | BLE stack/GATT/provisioning scaffold |
+| `main/mqtt_client_app.c/.h` | MQTT client scaffold |
+| `main/http_server_app.c/.h` | Local HTTP health/setup scaffold |
+| `main/modbus_tcp_server.c/.h` | Modbus TCP placeholder scaffold |
+| `main/ota_update.c/.h` | HTTPS OTA scaffold |
+| `main/test_harness.c/.h` | Bench/FAT runtime test harness scaffold |
 | `main/plc_runtime.h` | PLC runtime data structures and sequence state definitions |
 | `main/plc_runtime.c` | Retained state, trip logic, step engine, scan function |
 
