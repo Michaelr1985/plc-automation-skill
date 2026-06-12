@@ -112,6 +112,34 @@ Conventions:
 - Keep safety program/interface status separate from standard control logic.
 - For importable generated files, confirm Sysmac version and use supported project/POU export formats or IEC 61131-10 XML where available.
 
+## Archive ESP32 PLC / ESP-IDF
+
+Use for Archive PLC work when the controller is the bespoke Archive platform based on an ESP32 CPU and firmware is written with ESP-IDF.
+
+Conventions:
+
+- Generate an ESP-IDF project, not IEC PLC source.
+- Use C and CMake in the standard ESP-IDF project layout.
+- Keep the PLC scan concept explicit: read raw inputs, condition inputs, update interlocks/trips/alarms, execute step engines, then write outputs once.
+- Use FreeRTOS task timing for the PLC scan and document the scan period.
+- Use NVS for retained step words, retained counters, and selected configuration values.
+- Use ESP-IDF GPIO/ADC/communication drivers directly or through a hardware abstraction layer.
+- Separate modules by responsibility:
+  - `app_main.c` for startup and task creation.
+  - `io_map.c/.h` for raw IO mapping.
+  - `plc_runtime.c/.h` for scan orchestration, retained state, and fault handling.
+  - Equipment modules for motors, pumps, conveyors, valves, and process areas.
+  - `comms_*` modules for Modbus TCP/RTU, MQTT, HTTP, or site-specific protocols.
+- Use fail-safe output initialization before tasks start.
+- Avoid blocking calls inside the PLC scan task.
+- Do not implement safety-rated functions in standard ESP32 firmware. Safety functions need external safety hardware or certified safety architecture.
+
+Naming examples:
+
+- `archive_io_t`, `archive_runtime_t`, `archive_alarm_t`.
+- `plc_scan_task`, `archive_io_read`, `archive_io_write_safe`, `nvs_load_retain`.
+- `main_seq_step`, `pump_seq_step`, `trip_latched`, `permissive_ok`.
+
 ## Vendor-Neutral Migration Watchpoints
 
 - Boolean polarity and normally-open/normally-closed symbol meaning.

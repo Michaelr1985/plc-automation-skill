@@ -118,6 +118,26 @@ Rules:
 - Do not default to SFC.
 - Use PLCopen XML `.xml` or CODESYS `.export` for import-ready exchange. Plain `.ST` files are paste-in source/object content references.
 
+### Archive
+
+- Archive PLC
+- ESP32 CPU
+- ESP-IDF
+
+Rules:
+
+- Treat Archive as a bespoke PLC platform, not a generic Arduino board.
+- Generate ESP-IDF C/CMake projects when Archive is selected.
+- Use `app_main`, FreeRTOS tasks, `esp_timer` or deterministic task delays, ESP-IDF GPIO/ADC drivers, NVS for retained values, and watchdog/error handling where appropriate.
+- Keep PLC concepts explicit in C: raw IO mapping, conditioned IO, command logic, permissives, trips, alarms, retentive step words, diagnostics, and output mapping.
+- Automatic sequences still require the standard retained Step Engine architecture.
+- Use C structs/enums for command/status/config/alarm/runtime data.
+- Use fail-safe defaults: set all outputs off during boot, fault, watchdog, invalid IO, invalid mode, communications loss, or failed initialization.
+- Separate hardware abstraction from application logic: `io_map`, `plc_runtime`, equipment modules, comms, and `app_main`.
+- Confirm exact Archive hardware revision, GPIO map, analog input hardware, relay/transistor output type, comms ports, power-fail behavior, and isolation before generating final production firmware.
+- Do not claim ESP-IDF code is ready for field commissioning without hardware bench test, IO proof test, watchdog test, brownout/power-cycle test, and FAT.
+- Required file output format is an ESP-IDF project folder with `CMakeLists.txt`, `main/CMakeLists.txt`, and C/H source files. Label it **native source project**, not PLC vendor import.
+
 ## Industrial Network Engine
 
 Support:

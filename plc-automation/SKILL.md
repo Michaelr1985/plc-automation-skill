@@ -1,6 +1,6 @@
 ---
 name: plc-automation
-description: Use when designing, estimating, documenting, reviewing, simulating, commissioning, or coding industrial automation systems: PLC, HMI, SCADA, IO, networks, alarms, interlocks, step-engine sequences, IEC 61131-3, Siemens TIA Portal, Rockwell Studio 5000, Delta ISPSoft/WPLSoft, Schneider EcoStruxure Machine Expert, Omron Sysmac Studio, CODESYS V3, WAGO, IFM, Eaton, Festo, Turck, Raspberry Pi runtime, mine automation, conveyors, pumps, tanks, batching, crushers, screening, fuel, ventilation, water treatment, smart locks, warehouse automation, asset tracking, and vaccine fridge monitoring.
+description: Use when designing, estimating, documenting, reviewing, simulating, commissioning, or coding industrial automation systems: PLC, HMI, SCADA, IO, networks, alarms, interlocks, step-engine sequences, IEC 61131-3, Siemens TIA Portal, Rockwell Studio 5000, Delta ISPSoft/WPLSoft, Schneider EcoStruxure Machine Expert, Omron Sysmac Studio, CODESYS V3, WAGO, IFM, Eaton, Festo, Turck, Raspberry Pi runtime, Archive ESP32 PLC with ESP-IDF, mine automation, conveyors, pumps, tanks, batching, crushers, screening, fuel, ventilation, water treatment, smart locks, warehouse automation, asset tracking, and vaccine fridge monitoring.
 ---
 
 # PLC Automation
@@ -92,6 +92,7 @@ Load only what is needed:
 - Vendor validation and platform standards: `references/vendor-validation.md` and `references/vendor-conventions.md`
 - Vendor import/export file correctness: `references/vendor-file-output-standards.md`
 - Siemens TIA Portal importable SCL/STL source structure: `references/siemens-tia-source-standard.md`
+- Archive ESP32 PLC and ESP-IDF firmware structure: `references/archive-esp-idf-standard.md`
 - HMI, SCADA, and industrial networks: `references/hmi-scada-network.md`
 - Simulation, FAT, SAT, and commissioning: `references/simulation-commissioning.md`
 - Estimating and documentation: `references/estimating-documentation.md`
@@ -111,5 +112,6 @@ Load only what is needed:
 - If platform is unknown, generate vendor-neutral architecture, design tables, and pseudocode only. Never mix vendor syntax.
 - Label generated files as native import, external source, paste-in source, or engineering reference. Do not call plain text code import-ready unless the vendor supports that exact import path.
 - For Siemens importable code, generate complete TIA External Source or SIMATIC SD `.s7dcl` structures, not loose SCL/STL snippets.
+- For Archive PLC code, generate an ESP-IDF C/CMake project using the Archive ESP32 runtime pattern. Do not generate IEC ST/LAD/FBD unless the user explicitly asks for a vendor-neutral reference alongside the ESP-IDF implementation.
 - For every generated file package, create or update a local delivery folder containing all files needed by the user. Include a README or import note in that folder that explains file purpose, import order, manual steps, assumptions, and vendor validation limits.
 - If the same files are also added to a Git repository, keep the repo copy and local delivery folder synchronized before final response.

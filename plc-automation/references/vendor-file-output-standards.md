@@ -96,6 +96,24 @@ Rules:
 - Safe default: provide engineering design, symbol/register tables, ladder/ST/pseudocode, memory map, and manual implementation steps.
 - If the user provides an exported Delta project/source file, modify that existing format rather than inventing a schema.
 
+## Archive ESP32 PLC / ESP-IDF
+
+Correct output target:
+
+- ESP-IDF native source project folder.
+- Required minimum files: top-level `CMakeLists.txt`, `main/CMakeLists.txt`, `main/app_main.c`, and supporting `.c/.h` modules.
+
+Rules:
+
+- Archive PLC output is not IEC import/export. It is firmware source code for ESP-IDF.
+- Do not generate `.ST`, `.scl`, `.L5X`, PLCopen XML, or TIA source as the primary Archive deliverable.
+- Include an ESP-IDF README with target chip assumption, ESP-IDF version assumption, build command, flash command, monitor command, IO map assumptions, and hardware validation limits.
+- Keep hardware IO mapping in a dedicated module or clearly separated section.
+- Include fail-safe boot behavior and output de-energization on faults.
+- Use NVS or another explicit ESP-IDF-supported storage method for retained step words and retained counters.
+- If exact GPIO/ADC hardware is unknown, generate a clearly marked default IO map and require confirmation before field use.
+- Do not claim firmware is verified without building with ESP-IDF and testing on Archive hardware.
+
 ## Output Checklist
 
 Before finalizing generated files, state:

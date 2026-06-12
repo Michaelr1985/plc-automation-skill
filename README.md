@@ -15,6 +15,7 @@ A custom Codex skill for complete industrial automation engineering work from pr
 - Omron Sysmac Studio conventions
 - Schneider EcoStruxure Machine Expert conventions
 - CODESYS programming standards
+- Archive ESP32 PLC / ESP-IDF firmware conventions
 - Mine automation safety and sequencing guidance
 - Safety interlock review principles
 - Motor starter and conveyor control templates
@@ -40,5 +41,6 @@ The skill has already been installed locally on this machine.
 ## Included Control Packages
 
 - `siemens-tia-s7-1215/`: Siemens S7-1215 / TIA Portal SCL External Source package for the Valpre effluent VSD cascade project.
+- `archive-esp-idf/`: Archive ESP32 PLC / ESP-IDF starter project showing the required firmware structure.
 - `rockwell-studio5000/`: Allen-Bradley / Rockwell Studio 5000 package for a 5 VSD cascade control panel.
 - `codesys-st/`: CODESYS Structured Text package for the same 5 VSD cascade control panel.
