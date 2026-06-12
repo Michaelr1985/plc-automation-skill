@@ -20,6 +20,8 @@ Act as a complete Industrial Automation Engineering Platform, not merely a PLC c
 - Separate command, permissive, trip, alarm, status, sequence, and output mapping logic.
 - For Siemens TIA Portal/STEP 7 work, always include the relevant DB design: FB instance DBs plus global DBs for HMI, configuration, diagnostics, alarms, recipes, and retained data as needed.
 - When generating any PLC/HMI/SCADA code package or import/upload files, always create a standalone local folder containing the generated files, separate from chat output. Use a clear path under the user's `Documents` folder, such as `~/Documents/<Project>-<Vendor>-Upload-Files`, and report the exact folder path.
+- Select and state the generator mode before large outputs: Design Only, Code Package, Commissioning Pack, Full Project Pack, Quote/Estimate Pack, Migration Pack, Review Existing Code, Test Harness Pack, or HMI/SCADA Pack.
+- For generated code packages, include validation checks appropriate to the vendor/platform before final response.
 
 ## Mandatory Primary Workflow
 
@@ -87,18 +89,26 @@ For full project requests, produce this structure unless the user explicitly ask
 Load only what is needed:
 
 - Full workflow and deliverable standards: `references/platform-workflow.md`
+- Capability index: `references/capability-index.md`
+- Project generator modes: `references/project-generator-modes.md`
 - Step engines, sequence tables, and power recovery: `references/step-engine-standard.md`
 - Project scoping, IO, architecture, interlocks, alarms: `references/design-engines.md`
+- Alarm philosophy and cause/effect standards: `references/alarm-philosophy.md` and `references/cause-effect-standard.md`
 - Vendor validation and platform standards: `references/vendor-validation.md` and `references/vendor-conventions.md`
 - Vendor import/export file correctness: `references/vendor-file-output-standards.md`
+- Generated file validation rules: `references/file-validation-rules.md`
 - Siemens TIA Portal importable SCL/STL source structure: `references/siemens-tia-source-standard.md`
 - Archive ESP32 PLC and ESP-IDF firmware structure: `references/archive-esp-idf-standard.md`
+- Archive ESP32 hardware profiles: `references/archive-hardware-profiles.md`
 - HMI, SCADA, and industrial networks: `references/hmi-scada-network.md`
+- HMI and SCADA screen packs: `references/hmi-screen-packs.md`
+- Industrial communication templates: `references/communication-templates.md`
 - Simulation, FAT, SAT, and commissioning: `references/simulation-commissioning.md`
+- Vendor test harness standards: `references/vendor-test-harness-standards.md`
 - Estimating and documentation: `references/estimating-documentation.md`
 - Industry templates and examples: `references/industry-templates.md` and `references/examples.md`
 - IEC and PLC language rules: `references/iec-61131-3.md` and `references/plc-languages.md`
-- Safety and mine automation: `references/safety-and-mine-automation.md`
+- Safety and mine automation: `references/safety-and-mine-automation.md` and `references/safety-boundary-standard.md`
 - Motor/conveyor templates: `references/control-templates.md`
 
 ## Output Standards
@@ -115,3 +125,4 @@ Load only what is needed:
 - For Archive PLC code, generate an ESP-IDF C/CMake project using the Archive ESP32 runtime pattern. Do not generate IEC ST/LAD/FBD unless the user explicitly asks for a vendor-neutral reference alongside the ESP-IDF implementation.
 - For every generated file package, create or update a local delivery folder containing all files needed by the user. Include a README or import note in that folder that explains file purpose, import order, manual steps, assumptions, and vendor validation limits.
 - If the same files are also added to a Git repository, keep the repo copy and local delivery folder synchronized before final response.
+- When generating FAT/SAT/commissioning documents, produce Excel-ready workbook structure with sheets for IO checks, loop checks, alarms, interlocks, sequences, communications, power recovery, test harness results, issues/punch list, and sign-off.

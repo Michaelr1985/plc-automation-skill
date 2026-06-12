@@ -16,6 +16,15 @@ A custom Codex skill for complete industrial automation engineering work from pr
 - Schneider EcoStruxure Machine Expert conventions
 - CODESYS programming standards
 - Archive ESP32 PLC / ESP-IDF firmware conventions
+- Project generator modes and full project pack rules
+- Vendor-specific test harness standards
+- Archive hardware profile templates
+- HMI/SCADA screen pack standards
+- Alarm philosophy and cause/effect matrix standards
+- FAT/SAT Excel workbook standards
+- Industrial communication templates
+- Safety boundary rules
+- Generated file validation rules
 - Mine automation safety and sequencing guidance
 - Safety interlock review principles
 - Motor starter and conveyor control templates
